@@ -89,69 +89,6 @@
 		<scope>provided</scope>
 	</dependency>
 	<dependency>
-		<groupId>org.apache.poi</groupId>
-		<artifactId>poi</artifactId>
-		<version>${poi.version}</version>
-		<exclusions>
-			<exclusion>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-			</exclusion>
-		</exclusions>
-	</dependency>
-	<dependency>
-		<groupId>net.sourceforge.jexcelapi</groupId>
-		<artifactId>jxl</artifactId>
-		<version>${jxl.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>net.sf.jasperreports</groupId>
-		<artifactId>jasperreports</artifactId>
-		<version>${jasperreports.version}</version>
-		<exclusions>
-			<exclusion>
-				<groupId>xml-apis</groupId>
-				<artifactId>xml-apis</artifactId>
-			</exclusion>
-			<exclusion>
-				<groupId>eclipse</groupId>
-				<artifactId>jdtcore</artifactId>
-			</exclusion>
-			<exclusion>
-				<groupId>commons-beanutils</groupId>
-				<artifactId>commons-beanutils</artifactId>
-			</exclusion>
-			<exclusion>
-				<groupId>commons-logging</groupId>
-				<artifactId>commons-logging</artifactId>
-			</exclusion>
-			<exclusion>
-				<groupId>bouncycastle</groupId>
-				<artifactId>bcmail-jdk14</artifactId>
-			</exclusion>
-			<exclusion>
-				<groupId>bouncycastle</groupId>
-				<artifactId>bcprov-jdk14</artifactId>
-			</exclusion>
-		</exclusions>
-	</dependency>
-	<dependency>
-		<groupId>jfree</groupId>
-		<artifactId>jfreechart</artifactId>
-		<version>${jfreechart.version}</version>
-		<exclusions>
-			<exclusion>
-				<groupId>jfree</groupId>
-				<artifactId>jcommon</artifactId>
-			</exclusion>
-		</exclusions>
-	</dependency>
-	<dependency>
-		<groupId>com.jhlabs</groupId>
-		<artifactId>filters</artifactId>
-		<version>${filters.version}</version>
-	</dependency>
-	<dependency>
 		<groupId>commons-io</groupId>
 		<artifactId>commons-io</artifactId>
 		<version>${commons-io.version}</version>
@@ -169,16 +106,6 @@
 	<dependency>
 		<groupId>org.zkoss.theme</groupId>
 		<artifactId>breeze</artifactId>
-		<version>${zk.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.theme</groupId>
-		<artifactId>sapphire</artifactId>
-		<version>${zk.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.theme</groupId>
-		<artifactId>silvertail</artifactId>
 		<version>${zk.version}</version>
 	</dependency>
 	<dependency>
@@ -254,7 +181,7 @@
 	</dependency>	
   </dependencies>
   <build>
-    <finalName>datahandler</finalName>
+    <finalName>executor</finalName>
 	<!--
     <plugins>
             <plugin>

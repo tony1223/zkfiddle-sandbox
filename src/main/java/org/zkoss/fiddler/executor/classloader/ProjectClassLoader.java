@@ -2,6 +2,8 @@ package org.zkoss.fiddler.executor.classloader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.mortbay.jetty.webapp.WebAppClassLoader;
 import org.mortbay.jetty.webapp.WebAppContext;
@@ -16,8 +18,15 @@ import org.mortbay.resource.Resource;
  */
 public class ProjectClassLoader extends WebAppClassLoader {
 
+	private Map<String, Class> classPool = new HashMap<String, Class>();
+
 	public ProjectClassLoader(WebAppContext context, String projectClassPath) throws IOException {
 		this(context, projectClassPath, true);
+	}
+
+	public void addClass(Class clz) {
+		System.out.println("adding class:"+clz.getName());
+		classPool.put(clz.getName(), clz);
 	}
 
 	public ProjectClassLoader(WebAppContext context, String projectClassPath, boolean logger) throws IOException {
@@ -54,6 +63,8 @@ public class ProjectClassLoader extends WebAppClassLoader {
 	 */
 	public Class loadClass(String name) throws ClassNotFoundException {
 		try {
+			if (classPool.containsKey(name))
+				return classPool.get(name);
 			return loadClass(name, false);
 		} catch (NoClassDefFoundError e) {
 			throw new ClassNotFoundException(name);

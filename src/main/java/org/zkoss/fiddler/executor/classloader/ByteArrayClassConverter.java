@@ -12,6 +12,7 @@ public class ByteArrayClassConverter extends ClassLoader {
 		public void processByteClasses(List<ByteClass> list) {
 			for (ByteClass bc : list) {
 				String name = bc.getName();
+				System.out.println("compiling:"+name);
 				byte[] bts = bc.getBytes();
 				bc.setClz(super.defineClass(name, bts, 0, bts.length));
 			}

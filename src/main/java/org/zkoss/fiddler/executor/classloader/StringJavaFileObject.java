@@ -9,7 +9,7 @@ public class StringJavaFileObject extends SimpleJavaFileObject {
 		protected String str;
 
 		public StringJavaFileObject(String uriName, String str) {
-			super(java.net.URI.create("file:///" + uriName + ".java"), JavaFileObject.Kind.SOURCE);
+			super(java.net.URI.create("file:///" + uriName ), JavaFileObject.Kind.SOURCE);
 			this.str = str;
 		}
 

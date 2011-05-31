@@ -5,40 +5,65 @@ import java.net.DatagramSocket;
 import java.net.ServerSocket;
 
 /**
- * A configuration object to handle the complicated parse job ,
- * and make thing easier.
+ * A configuration object to handle the complicated parse job , and make thing
+ * easier.
  */
 
 public class Configs {
+
 	private String context;
+
 	private String webAppDir;
+
 	private Integer port;
+
 	private Integer sslport;
+
 	private String keystore;
+
 	private String password;
+
 	private String webAppClassPath;
+
 	private String keyPassword;
+
 	private Integer scanIntervalSeconds;
+
 	private Boolean parentLoaderPriority;
 
 	private Boolean enablessl;
+
 	private Boolean needClientAuth;
+
 	private Boolean enableJNDI;
+
 	private String configurationClasses;
+
+	// Fiddler only
+	private String remoteResourceHost = "http://localhost:8088";
+
+	public String getRemoteResourceHost() {
+		return remoteResourceHost;
+	}
+
+	public void setRemoteResourceHost(String remoteResourceHost) {
+		this.remoteResourceHost = remoteResourceHost;
+	}
 
 	public Configs() {
 		context = "/";
 		webAppDir = System.getProperty("rjrwebapp");
-		if(webAppDir != null){
-			if(webAppDir.matches("^\".*?\"$")){
-				webAppDir = webAppDir.substring(1,webAppDir.length()-1);
+		if (webAppDir != null) {
+			if (webAppDir.matches("^\".*?\"$")) {
+				webAppDir = webAppDir.substring(1, webAppDir.length() - 1);
 			}
 		}
 		port = 10158;
 		sslport = -1;
-		//FIXME remove this after production
-		webAppClassPath =  "C:/workspace/executor/target/dependency/"; //resovleWebappClasspath();
-		parentLoaderPriority = true; //getBoolean("rjrparentloaderpriority", true);
+		// FIXME remove this after production
+		webAppClassPath = "C:/workspace/executor/target/dependency/"; // resovleWebappClasspath();
+		parentLoaderPriority = true; // getBoolean("rjrparentloaderpriority",
+										// true);
 
 		enablessl = false;
 		needClientAuth = false;
@@ -47,14 +72,13 @@ public class Configs {
 
 	}
 
-
 	public String getContext() {
 		return context;
 	}
 
-//	public String getWebAppDir() {
-//		return webAppDir;
-//	}
+	// public String getWebAppDir() {
+	// return webAppDir;
+	// }
 
 	public Integer getPort() {
 		return port;
@@ -104,30 +128,25 @@ public class Configs {
 		return configurationClasses;
 	}
 
-
 	public void validation() {
 		if (getContext() == null) {
-			throw new IllegalStateException(
-					"you need to provide argument -Drjrcontext");
+			throw new IllegalStateException("you need to provide argument -Drjrcontext");
 		}
-//		if (getWebAppDir() == null) {
-//			throw new IllegalStateException(
-//					"you need to provide argument -Drjrwebapp");
-//		}
+		// if (getWebAppDir() == null) {
+		// throw new IllegalStateException(
+		// "you need to provide argument -Drjrwebapp");
+		// }
 		if (getPort() == null && getSslport() == null) {
-			throw new IllegalStateException(
-					"you need to provide argument -Drjrport and/or -Drjrsslport");
+			throw new IllegalStateException("you need to provide argument -Drjrport and/or -Drjrsslport");
 		}
-		
+
 		if (!available(port)) {
-			throw new IllegalStateException("port :" + port
-					+ " already in use!");
+			throw new IllegalStateException("port :" + port + " already in use!");
 		}
-		
-		if (getEnablessl() && getSslport() != null){
+
+		if (getEnablessl() && getSslport() != null) {
 			if (!available(sslport)) {
-				throw new IllegalStateException("SSL port :" + sslport
-						+ " already in use!");
+				throw new IllegalStateException("SSL port :" + sslport + " already in use!");
 			}
 		}
 	}
@@ -162,6 +181,8 @@ public class Configs {
 
 		return false;
 	}
-	
 
+	public static boolean isLogMode(){
+		return true;
+	}
 }
