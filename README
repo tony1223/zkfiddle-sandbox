@@ -1,2 +1,6 @@
 
 This is a project for ZK fiddler data handler.
+
+NOTICE: 
+If you want to develop with this project, you MUST use JDK to run this project,
+instead of JRE. Eclipse default use JRE. 
