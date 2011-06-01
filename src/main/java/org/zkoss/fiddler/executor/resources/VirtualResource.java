@@ -43,8 +43,6 @@ public class VirtualResource extends Resource {
 	private static final long serialVersionUID = 8748988779292501912L;
 
 	private Resource resource = null;
-	private URL url = null;
-	private String resourcePath;
 	private String resourcebase = null;
 	private Resource webroot ;
 	/**
@@ -59,8 +57,7 @@ public class VirtualResource extends Resource {
 			String path) throws MalformedURLException, IOException, URISyntaxException {
 
 		this.webroot = webroot;
-		this.resourcePath = path;
-		url = new File(path).toURI().toURL();
+		URL url = new File(path).toURI().toURL();
 		resource = new FileResource(url);
 		resourcebase = contextPath;
 	}
