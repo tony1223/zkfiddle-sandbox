@@ -72,6 +72,7 @@ public class Bootstrap {
 		File f = File.createTempFile("resource", "tmp");
 		f.delete();
 		f.mkdir();
+		f.deleteOnExit();
 		web.setBaseResource(new FiddleWebappResource(loader, 
 				new FiddleResourceFetcher(configs.getRemoteResourceHost(),	f)));
 

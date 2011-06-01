@@ -4,14 +4,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.mortbay.resource.FileResource;
+import org.mortbay.resource.Resource;
 import org.mortbay.util.ajax.JSON;
 import org.zkoss.fiddler.executor.classloader.ByteClass;
 import org.zkoss.fiddler.executor.classloader.FiddleClass;
@@ -19,14 +22,6 @@ import org.zkoss.fiddler.executor.classloader.FiddleClassUtil;
 import org.zkoss.fiddler.executor.server.Configs;
 
 public class FiddleResourceFetcher {
-
-	// public static void main(String[] args) throws MalformedURLException {
-	// FiddleResourceFetcher frt = new
-	// FiddleResourceFetcher("http://localhost:8088");
-	// List<FetchResource> resources = frt.fetch(new FetchedToken("34f8ilk",
-	// ""));
-	//
-	// }
 
 	Map<FetchedToken, List<FetchResource>> cacheResult = new HashMap<FetchedToken, List<FetchResource>>();
 
@@ -43,16 +38,22 @@ public class FiddleResourceFetcher {
 		return cacheResult.containsKey(ft);
 	}
 
-
-	// 3b10fdm
-	public List<FetchResource> fetch(FetchedToken ft) throws MalformedURLException {
-
-		// TODO review this
-		if (cacheResult.containsKey(ft)) {
-			return cacheResult.get(ft);
+	private URL fileToURL(File f) {
+		try {
+			return f.toURI().toURL();
+		} catch (MalformedURLException e) {
+			if (Configs.isLogMode())
+				e.printStackTrace();
+			return null;
 		}
+	}
 
-		URL u = new URL(host + "/data/" + ft.getToken() + ("".equals(ft.getVersion()) ? "" : "/" + ft.getVersion()));
+	public Resource getTokenHolder(FetchedToken ft) throws IOException, URISyntaxException {
+		return new FileResource(fileToURL(new File(base.getAbsolutePath() + "/" + ft.getToken() + "/" + ft.getVersion()
+				+ "/")));
+	}
+
+	private String fetchContent(URL u){
 
 		if (Configs.isLogMode())
 			System.out.println("requesting:" + u);
@@ -73,19 +74,13 @@ public class FiddleResourceFetcher {
 			e.printStackTrace();
 			return null;
 		}
-		if ("".equals(content.toString())) {
-			cacheResult.put(ft, null);
-			return null;
-		}
-
-		Map map = (Map) JSON.parse(content.toString());
-
+		return content.toString();
+	}
+	
+	private List<FetchResource> parseResourceList(String content,String storeParent){
+		Map map = (Map) JSON.parse(content);
 		Object[] resources = (Object[]) map.get("resources");
-
 		List<FetchResource> list = new ArrayList<FetchResource>();
-
-		List<FiddleClass> fiddleClass = new ArrayList<FiddleClass>();
-
 		for (Object obj : resources) {
 			Map resource = (Map) obj;
 			if (Configs.isLogMode())
@@ -94,35 +89,59 @@ public class FiddleResourceFetcher {
 			fr.setType(((Long) resource.get("type")).intValue());
 			fr.setFileName((String) resource.get("name"));
 			fr.setContent((String) resource.get("content"));
-			fr.setStorePath(base.getAbsolutePath() + "/" + ft.getToken() +"/"+ft.getVersion()+"/"+ fr.getFileName());
-
-			fr.saveContent();
-			// TODO: notify user if parse error
+			fr.setStoreBasePath(base.getAbsolutePath() + storeParent + File.separator);
+			list.add(fr);
+		}		
+		return list;
+	}
+	
+	/**
+	 * 
+	 * @throws IllegalStateException when Compile Error
+	 * @param resources
+	 * @return
+	 */
+	public List<Class> compile(List<FetchResource> resources ) {
+		 List<Class> ret = new ArrayList<Class>();
+		List<FiddleClass> fiddleClass =new ArrayList<FiddleClass>();
+		for(FetchResource fr:resources){
 			if (fr.getType() == 1) {
 				fiddleClass.add(new FiddleClass(fr.getFileName(), fr.getContent()));
 			}
-
-			list.add(fr);
 		}
+		
 		if (fiddleClass.size() != 0) {
-			// TODO review this
-			List<ByteClass> classlist = FiddleClassUtil.compile(fiddleClass);
+			StringWriter sw = new StringWriter();
+			List<ByteClass> classlist = FiddleClassUtil.compile(fiddleClass, sw);
 
-			for (FetchResource rc : list) {
+			if (sw.getBuffer().length() != 0 && sw.getBuffer().indexOf("errors") != -1) { //Compile error
+				throw new IllegalStateException("Compile Error:" + sw.getBuffer().toString());
+			}	
 
-				if (rc.getType() == 1) {
-					for (ByteClass bc : classlist) {
-						if (ObjectUtils.equals(rc.getFileName(), bc.getName() + ".java")) {
-							rc.setClz(bc.getCls());
-						}
-					}
-				}
-
+			/* Note that one resource might mapping to multiple resource , so we didn't record resource-class mapping. */
+			for (ByteClass bc : classlist) {
+				ret.add(bc.getCls());
 			}
 		}
-		cacheResult.put(ft, list);
-
-		return list;
+		return ret;
 	}
+	
+	// 3b10fdm
+	public List<FetchResource> fetch(FetchedToken ft) throws MalformedURLException {
+
+		URL u = new URL(host + "/data/" + ft.getToken() +"/" +  ft.getVersion());
+		String content = fetchContent(u);
+
+		if ("".equals(content)) {
+			cacheResult.put(ft, null);
+			return null;
+		}
+
+		String parent =  File.separator + ft.getToken() + File.separator + ft.getVersion() ;
+		List<FetchResource> resources = parseResourceList(content,parent);
+		cacheResult.put(ft, resources);
+		return resources;
+	}
+	
 
 }

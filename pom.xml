@@ -23,6 +23,7 @@
 		<timelinez.version>2.3.1_50</timelinez.version>
 		<timeplotz.version>1.1_50</timeplotz.version>
 		<zuljsp.version>1.4.1</zuljsp.version>
+		<jetty.version>6.1.26</jetty.version>
 	</properties>  
   <version>0.8.0</version>
   <name>ZK Fiddle Data handler</name>
@@ -74,8 +75,18 @@
 	<dependency>
 	    <groupId>org.mortbay.jetty</groupId>
 	    <artifactId>jetty</artifactId>
-	    <version>6.1.26</version>
-	</dependency>  	
+	    <version>${jetty.version}</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.mortbay.jetty</groupId>
+	    <artifactId>jsp-2.1-glassfish</artifactId>
+	    <version>2.1.v20100127</version>
+	</dependency>
+	 <dependency>
+    	<groupId>org.mortbay.jetty</groupId>
+    	<artifactId>jsp-api-2.1</artifactId>
+    	<version>6.1.14</version>
+	</dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

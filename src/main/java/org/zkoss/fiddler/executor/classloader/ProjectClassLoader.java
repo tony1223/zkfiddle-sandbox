@@ -3,11 +3,13 @@ package org.zkoss.fiddler.executor.classloader;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mortbay.jetty.webapp.WebAppClassLoader;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.resource.Resource;
+import org.zkoss.fiddler.executor.server.Configs;
 
 /**
  * Uses the provided class path ONLY, rather than also supporting the adding of
@@ -24,9 +26,16 @@ public class ProjectClassLoader extends WebAppClassLoader {
 		this(context, projectClassPath, true);
 	}
 
-	public void addClass(Class clz) {
-		System.out.println("adding class:"+clz.getName());
+	public void addResourceClass(Class clz) {
+		if (Configs.isLogMode())
+			System.out.println("adding class:" + clz.getName());
 		classPool.put(clz.getName(), clz);
+	}
+
+	public void addAllResourceClasses(List<Class> clzes) {
+		for(Class c:clzes){
+			addResourceClass(c);
+		}
 	}
 
 	public ProjectClassLoader(WebAppContext context, String projectClassPath, boolean logger) throws IOException {

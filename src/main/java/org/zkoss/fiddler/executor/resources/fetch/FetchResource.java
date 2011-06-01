@@ -22,7 +22,7 @@ public class FetchResource {
 	private String storePath;
 
 	public URL getStoreURL() {
-		File f = new File(storePath);
+		File f = new File(getStorePath());
 		try {
 			return f.toURI().toURL();
 		} catch (MalformedURLException e) {
@@ -34,10 +34,10 @@ public class FetchResource {
 	}
 
 	public String getStorePath() {
-		return storePath;
+		return storePath + getFileName();
 	}
 
-	public void setStorePath(String storePath) {
+	public void setStoreBasePath(String storePath) {
 		this.storePath = storePath;
 	}
 
@@ -76,7 +76,7 @@ public class FetchResource {
 	}
 
 	public boolean saveContent() {
-		String newFileName = this.getStorePath();
+		String newFileName = this.getStorePath() ;
 		File f = new File(newFileName);
 		if (Configs.isLogMode())
 			System.out.println("save to :" + newFileName);

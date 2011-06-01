@@ -53,4 +53,7 @@ public class FetchedToken {
 		}
 		return super.equals(obj);
 	}
+	public int hashCode() {
+		return (getToken()+getVersion()).hashCode();
+	}
 }

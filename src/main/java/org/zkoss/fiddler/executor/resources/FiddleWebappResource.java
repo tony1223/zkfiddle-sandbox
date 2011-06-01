@@ -114,6 +114,9 @@ public class FiddleWebappResource extends FiddleResourceBase {
 		if (Configs.isLogMode())
 			System.out.println("fetching:" + path);
 
+		if (resourcePool.containsKey(path))
+			return resourcePool.get(path);
+		
 		if (path == null) {
 			return new EmptyResource();
 		} else if (path.endsWith(".gz") || path.indexOf("favicon.ico") != -1) {
@@ -124,36 +127,73 @@ public class FiddleWebappResource extends FiddleResourceBase {
 			return new FiddleWEBINFResourceHandler();
 		} else if ("/".equals(path)) {
 			return this;
+		} else if (path.startsWith(("/WEB-INF"))) {
+			return new EmptyResource();
 		} else if (path.matches("/([0-9a-zA-Z]+)(/[0-9]+)?.*")) {
-
-			Matcher match = parser.matcher(path);
-			if (match.find()) {
-				FetchedToken ft = new FetchedToken(match.group(1), match.groupCount() > 1 ? match.group(2).replaceFirst("/","") : "");
-				// FIXME change host
-				List<FetchResource> resources = fetcher.fetch(ft);
-				if (resources != null) {
-					for (FetchResource fr : resources) {
-						if (Configs.isLogMode())
-							System.out.println("adding to pool:" + (path + "/" + fr.getFileName()));
-
-						try {
-							resourcePool.put(path + "/" + fr.getFileName(), new FileResource(fr.getStoreURL()));
-						} catch (URISyntaxException e) {
-							if (Configs.isLogMode())
-								e.printStackTrace();
-						}
-						if (fr.getType() == 1) {
-							classesLoader.addClass(fr.getClz());
-						}
-					}
-				}
-			}
-
+			handleResourceFetching(path);
 			// fetcher.
 		}
 		if (resourcePool.containsKey(path)) {
 			return resourcePool.get(path);
 		}
 		return new EmptyResource();
+	}
+
+	private void handleResourceFetching(String path) throws IOException {
+
+		Matcher match = parser.matcher(path);
+		if (match.find()) {
+
+			String token = match.group(1);
+			String ver = match.groupCount() > 1 ? match.group(2) : "";
+			ver = ver != null ? ver.replaceAll("/","") : null;
+
+			if (Configs.isLogMode()) {
+				System.out.println(token + ":" + ver);
+			}
+
+			FetchedToken ft = new FetchedToken(token, ver);
+
+			String key = "/" + ft.getToken() + "/" + ft.getVersion() ;
+			if (!fetcher.isFetched(ft)) {
+				List<FetchResource> resources = fetcher.fetch(ft);
+				try {
+					Resource r = fetcher.getTokenHolder(ft);
+					resourcePool.put(key +"/", r);
+				} catch (URISyntaxException e1) {
+					if (Configs.isLogMode())
+						e1.printStackTrace();
+				}
+				if (resources != null) {
+
+					try {
+						classesLoader.addAllResourceClasses(fetcher.compile(resources));
+					} catch (IllegalStateException e) {
+						if(Configs.isLogMode()){
+							System.err.println("Because your sample have java compile error so it can't show up ,\n"
+									+ e.getMessage());
+						}
+						for (FetchResource fr : resources) {
+							fr.setFileName("index.html");
+							fr.setContent("<pre>Because your sample have java compile error so it can't show up ,\n"
+									+ e.getMessage() +"</pre>");
+						}
+					}
+
+					for (FetchResource fr : resources) {
+						if (Configs.isLogMode())
+							System.out.println("adding to pool:" + (key +"/" + fr.getFileName()));
+						fr.saveContent();
+						try {
+							resourcePool.put(key +"/" + fr.getFileName(), new FileResource(fr.getStoreURL()));
+						} catch (URISyntaxException e) {
+							if (Configs.isLogMode())
+								e.printStackTrace();
+						}
+					}
+
+				}
+			}
+		}
 	}
 }
