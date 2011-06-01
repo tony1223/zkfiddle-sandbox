@@ -22,7 +22,7 @@ public class ProjectClassLoader extends WebAppClassLoader {
 
 	private Map<String, Class> classPool = new HashMap<String, Class>();
 
-	public ProjectClassLoader(WebAppContext context, String projectClassPath) throws IOException {
+	public ProjectClassLoader(WebAppContext context, String[] projectClassPath) throws IOException {
 		this(context, projectClassPath, true);
 	}
 
@@ -33,12 +33,12 @@ public class ProjectClassLoader extends WebAppClassLoader {
 	}
 
 	public void addAllResourceClasses(List<Class> clzes) {
-		for(Class c:clzes){
+		for (Class c : clzes) {
 			addResourceClass(c);
 		}
 	}
 
-	public ProjectClassLoader(WebAppContext context, String projectClassPath, boolean logger) throws IOException {
+	public ProjectClassLoader(WebAppContext context, String[] projectClassPaths, boolean logger) throws IOException {
 		super(context);
 
 		/*
@@ -54,14 +54,18 @@ public class ProjectClassLoader extends WebAppClassLoader {
 		 * to split the projectClassPath, and hand each entry to the super
 		 * class, one at a time.
 		 */
-		File f = new File(projectClassPath);
-		String[] tokens = f.list();
-		// String[] tokens =
-		// projectClassPath.split(String.valueOf(File.pathSeparatorChar));
-		for (String entry : tokens) {
-			if (logger)
-				System.err.println("ProjectClassLoader: entry=" + f.getAbsolutePath() + File.separator + entry);
-			super.addClassPath(f.getAbsolutePath() + File.separator + entry);
+		if (projectClassPaths != null) {
+			for (String projectClasspath : projectClassPaths) {
+				File f = new File(projectClasspath);
+				String[] tokens = f.list();
+				// String[] tokens =
+				// projectClassPath.split(String.valueOf(File.pathSeparatorChar));
+				for (String entry : tokens) {
+					if (logger)
+						System.err.println("ProjectClassLoader: entry=" + f.getAbsolutePath() + File.separator + entry);
+					super.addClassPath(f.getAbsolutePath() + File.separator + entry);
+				}
+			}
 		}
 
 	}

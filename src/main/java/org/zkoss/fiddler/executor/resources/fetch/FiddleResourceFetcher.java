@@ -1,9 +1,7 @@
 package org.zkoss.fiddler.executor.resources.fetch;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -20,6 +18,7 @@ import org.zkoss.fiddler.executor.classloader.ByteClass;
 import org.zkoss.fiddler.executor.classloader.FiddleClass;
 import org.zkoss.fiddler.executor.classloader.FiddleClassUtil;
 import org.zkoss.fiddler.executor.server.Configs;
+import org.zkoss.fiddler.executor.utils.URLUtil;
 
 public class FiddleResourceFetcher {
 
@@ -53,29 +52,6 @@ public class FiddleResourceFetcher {
 				+ "/")));
 	}
 
-	private String fetchContent(URL u){
-
-		if (Configs.isLogMode())
-			System.out.println("requesting:" + u);
-
-		StringBuffer content = new StringBuffer();
-
-		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(u.openConnection().getInputStream()));
-
-			String input = br.readLine();
-			while (input != null) {
-				content.append(input);
-				input = br.readLine();
-			}
-
-			br.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return content.toString();
-	}
 	
 	private List<FetchResource> parseResourceList(String content,String storeParent){
 		Map map = (Map) JSON.parse(content);
@@ -130,7 +106,7 @@ public class FiddleResourceFetcher {
 	public List<FetchResource> fetch(FetchedToken ft) throws MalformedURLException {
 
 		URL u = new URL(host + "/data/" + ft.getToken() +"/" +  ft.getVersion());
-		String content = fetchContent(u);
+		String content = URLUtil.fetchContent(u);
 
 		if ("".equals(content)) {
 			cacheResult.put(ft, null);

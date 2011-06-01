@@ -23,7 +23,7 @@ public class Configs {
 
 	private String password;
 
-	private String webAppClassPath;
+	private String[] webAppClasslibPaths;
 
 	private String keyPassword;
 
@@ -40,6 +40,7 @@ public class Configs {
 	private String configurationClasses;
 
 	// Fiddler only
+	//FIXME move to config
 	private String remoteResourceHost = "http://localhost:8088";
 
 	public String getRemoteResourceHost() {
@@ -52,16 +53,26 @@ public class Configs {
 
 	public Configs() {
 		context = "/";
-		webAppDir = System.getProperty("rjrwebapp");
+		webAppDir = System.getProperty("webapp");
 		if (webAppDir != null) {
 			if (webAppDir.matches("^\".*?\"$")) {
 				webAppDir = webAppDir.substring(1, webAppDir.length() - 1);
 			}
 		}
-		port = 10158;
+		Integer mport = Integer.getInteger("port", -1);
+		boolean autoport = Boolean.getBoolean("autoport");
+
+		if (mport == -1) {
+			if (autoport) {
+				port = findAAvaiablePort(10000, 20000, 100);
+			} else {
+				port = 10158;
+			}
+		} else {
+			port = mport;
+		}
 		sslport = -1;
-		// FIXME remove this after production
-		webAppClassPath = "C:/workspace/executor/target/dependency/"; // resovleWebappClasspath();
+		webAppClasslibPaths = System.getProperty("libpaths", "").split(";"); // resovleWebappClasspath();
 		parentLoaderPriority = true; // getBoolean("rjrparentloaderpriority",
 										// true);
 
@@ -72,13 +83,27 @@ public class Configs {
 
 	}
 
+	private int findAAvaiablePort(int start, int end, int retry) {
+
+		int range = end - start + 1;
+		int port = -1;
+
+		for (int i = 0; i < retry || retry == -1; ++i) {
+			port = start + (int) (Math.random() * range);
+			if (available(port))
+				return port;
+		}
+
+		throw new IllegalStateException("no available port");
+	}
+
 	public String getContext() {
 		return context;
 	}
 
-	// public String getWebAppDir() {
-	// return webAppDir;
-	// }
+	public String getWebAppDir() {
+		return webAppDir;
+	}
 
 	public Integer getPort() {
 		return port;
@@ -96,8 +121,8 @@ public class Configs {
 		return password;
 	}
 
-	public String getWebAppClassPath() {
-		return webAppClassPath;
+	public String[] getWebAppClasslibPaths() {
+		return webAppClasslibPaths;
 	}
 
 	public String getKeyPassword() {
@@ -130,14 +155,14 @@ public class Configs {
 
 	public void validation() {
 		if (getContext() == null) {
-			throw new IllegalStateException("you need to provide argument -Drjrcontext");
+			throw new IllegalStateException("you need to provide argument -Dcontext");
 		}
 		// if (getWebAppDir() == null) {
 		// throw new IllegalStateException(
 		// "you need to provide argument -Drjrwebapp");
 		// }
 		if (getPort() == null && getSslport() == null) {
-			throw new IllegalStateException("you need to provide argument -Drjrport and/or -Drjrsslport");
+			throw new IllegalStateException("you need to provide argument -Dport and/or -Dsslport");
 		}
 
 		if (!available(port)) {
@@ -182,7 +207,8 @@ public class Configs {
 		return false;
 	}
 
-	public static boolean isLogMode(){
-		return true;
+	private static boolean _logMode = Boolean.getBoolean("debug"); 
+	public static boolean isLogMode() {
+		return _logMode;
 	}
 }

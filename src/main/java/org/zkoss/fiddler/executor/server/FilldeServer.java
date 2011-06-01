@@ -2,7 +2,9 @@ package org.zkoss.fiddler.executor.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 
 import org.mortbay.jetty.Server;
@@ -12,13 +14,15 @@ import org.mortbay.jetty.webapp.WebAppContext;
 import org.zkoss.fiddler.executor.classloader.ProjectClassLoader;
 import org.zkoss.fiddler.executor.resources.FiddleWebappResource;
 import org.zkoss.fiddler.executor.resources.fetch.FiddleResourceFetcher;
+import org.zkoss.fiddler.executor.utils.URLUtil;
 
 /**
- * Started up by the plugin's runner. Starts Jetty.
+ * Started up by the plugin's runner. Starts Jetty. Reference from Run-Jetty-Run
+ * project 's Bootstrap.
  * 
- * @author hillenius, jsynge, jumperchen
+ * @author tonyq
  */
-public class Bootstrap {
+public class FilldeServer {
 
 	private static Server server;
 
@@ -31,25 +35,33 @@ public class Bootstrap {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		logArgus(false);
 		Configs configs = new Configs();
-
 		configs.validation();
-
 		server = new Server();
 
 		initConnnector(server, configs);
-
 		initWebappContext(server, configs);
-
 		try {
 			server.start();
+			// FIXME mvoe the path to config
+
+			boolean connect = pingRemote(configs.getRemoteResourceHost(),
+					"http://localhost:" + configs.getPort() + "/", "5.0.7");
+			if (connect && Configs.isLogMode()) {
+				System.out.println("connect with " + configs.getRemoteResourceHost());
+			}
 			server.join();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(100);
 		}
 		return;
+	}
+
+	private static boolean pingRemote(String remotehost, String path, String version) throws MalformedURLException {
+		String content = URLUtil.fetchContent(new URL(remotehost + "/instance/?path=" + path + "&ver=" + version
+				+ "&name=TonyQ"));
+		return (Boolean.parseBoolean(content));
 	}
 
 	private static void initWebappContext(Server server, Configs configs) throws IOException, URISyntaxException {
@@ -65,16 +77,25 @@ public class Bootstrap {
 
 		web.setInitParams(Collections.singletonMap("org.mortbay.jetty.servlet.Default.useFileMappedBuffer", "true"));
 
-		ProjectClassLoader loader = new ProjectClassLoader(web, configs.getWebAppClassPath());
+		ProjectClassLoader loader = new ProjectClassLoader(web, configs.getWebAppClasslibPaths());
 		web.setClassLoader(loader);
 
 		// ZK web.xml configuration
-		File f = File.createTempFile("resource", "tmp");
-		f.delete();
-		f.mkdir();
-		f.deleteOnExit();
-		web.setBaseResource(new FiddleWebappResource(loader, 
-				new FiddleResourceFetcher(configs.getRemoteResourceHost(),	f)));
+		File webapp = null;
+
+		if (configs.getWebAppDir() == null) {
+
+			webapp = File.createTempFile("resource", "tmp");
+			webapp.delete();
+			webapp.mkdir();
+			webapp.deleteOnExit();
+
+		} else {
+			webapp = new File(configs.getWebAppDir());
+		}
+
+		web.setBaseResource(new FiddleWebappResource(loader, new FiddleResourceFetcher(configs.getRemoteResourceHost(),
+				webapp), webapp));
 
 		server.addHandler(web);
 	}
@@ -92,18 +113,6 @@ public class Bootstrap {
 			initSSL(server, configObj.getSslport(), configObj.getKeystore(), configObj.getPassword(),
 					configObj.getKeyPassword(), configObj.getNeedClientAuth());
 
-	}
-
-	private static void logArgus(boolean loggerparam) {
-
-		if (loggerparam) {
-			String[] propkeys = new String[] { "rjrcontext", "rjrwebapp", "rjrport", "rjrsslport", "rjrkeystore",
-					"rjrpassword", "rjrclasspath", "rjrkeypassword", "rjrscanintervalseconds", "rjrenablescanner",
-					"rjrenablessl", "rjrenbaleJNDI" };
-			for (String key : propkeys) {
-				System.err.println("-D" + key + "=" + System.getProperty(key));
-			}
-		}
 	}
 
 	private static void initSSL(Server server, int sslport, String keystore, String password, String keyPassword,

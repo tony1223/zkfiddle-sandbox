@@ -31,11 +31,22 @@ public class FiddleWebappResource extends FiddleResourceBase {
 	private Pattern parser = Pattern.compile("/([0-9a-zA-Z]+)(/([0-9]+))?.*");
 
 	private HashMap<String, Resource> resourcePool = new HashMap<String, Resource>();
+	private FileResource base ;
 
-	public FiddleWebappResource(ProjectClassLoader projectLoader, FiddleResourceFetcher fetcher) {
+	public FiddleWebappResource(ProjectClassLoader projectLoader, FiddleResourceFetcher fetcher ,File f) {
 		this.fetcher = fetcher;
 
 		classesLoader = projectLoader;
+		try {
+			base = new FileResource(f.toURI().toURL());
+		} catch (MalformedURLException e1) {
+			if(Configs.isLogMode()) e1.printStackTrace();
+		} catch (IOException e1) {
+			if(Configs.isLogMode()) e1.printStackTrace();
+		} catch (URISyntaxException e1) {
+			if(Configs.isLogMode()) e1.printStackTrace();
+		}
+		
 		try {
 			baseFile = File.createTempFile("jtr", "hello");
 		} catch (IOException e) {
@@ -72,21 +83,21 @@ public class FiddleWebappResource extends FiddleResourceBase {
 	 * @throws UnsupportedOperationException
 	 */
 	public String getName() {
-		throw new UnsupportedOperationException("Unsupported");
+		return base.getName();
 	}
 
 	/**
 	 * @throws UnsupportedOperationException
 	 */
 	public InputStream getInputStream() throws IOException {
-		throw new UnsupportedOperationException("Unsupported");
+		return base.getInputStream();
 	}
 
 	/**
 	 * @throws UnsupportedOperationException
 	 */
 	public OutputStream getOutputStream() throws IOException, SecurityException {
-		throw new UnsupportedOperationException("Unsupported");
+		return base.getOutputStream();
 	}
 
 	/**
@@ -136,7 +147,7 @@ public class FiddleWebappResource extends FiddleResourceBase {
 		if (resourcePool.containsKey(path)) {
 			return resourcePool.get(path);
 		}
-		return new EmptyResource();
+		return base.addPath(path);
 	}
 
 	private void handleResourceFetching(String path) throws IOException {
