@@ -54,7 +54,7 @@ public class ProjectClassLoader extends WebAppClassLoader {
 		 * to split the projectClassPath, and hand each entry to the super
 		 * class, one at a time.
 		 */
-		if (projectClassPaths != null) {
+		if (projectClassPaths != null && !"".equals(projectClassPaths[0])) {
 			for (String projectClasspath : projectClassPaths) {
 				File f = new File(projectClasspath);
 				String[] tokens = f.list();

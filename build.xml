@@ -1,0 +1,23 @@
+<project name="executor" default="help" basedir=".">
+    
+    <target name="run">
+        <java classname="org.zkoss.fiddler.executor.server.FiddleInstanceServer"
+         fork="true">
+            <sysproperty key="autoport"
+             value="true"
+            />
+            <sysproperty key="debug"
+             value="true"
+            />
+            <sysproperty key="libpaths"
+             value="C:/workspace/executor/jar_src"
+            />
+            <classpath>
+                <fileset dir="target/dependency">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+    
+</project>

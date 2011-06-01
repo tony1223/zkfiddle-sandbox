@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.zkoss.fiddle</groupId>
   <artifactId>executor</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 	<properties>
-		<zk.version>5.0.7</zk.version>
+		<zk.version>5.0.6</zk.version>
 		<zkel.version>1.1.0</zkel.version>
 		<commons-lang.version>2.4</commons-lang.version>
 		<bsh.version>2.0b4</bsh.version>
@@ -114,86 +114,9 @@
 		<artifactId>commons-fileupload</artifactId>
 		<version>${commons-fileupload.version}</version>
 	</dependency>
-	<dependency>
-		<groupId>org.zkoss.theme</groupId>
-		<artifactId>breeze</artifactId>
-		<version>${zk.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.common</groupId>
-		<artifactId>zweb</artifactId>
-		<version>${zk.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.zk</groupId>
-		<artifactId>zhtml</artifactId>
-		<version>${zk.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.zk</groupId>
-		<artifactId>zml</artifactId>
-		<version>${zk.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.zk</groupId>
-		<artifactId>zkex</artifactId>
-		<version>${zk.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.zk</groupId>
-		<artifactId>zkmax</artifactId>
-		<version>${zk.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.zk</groupId>
-		<artifactId>zkplus</artifactId>
-		<version>${zk.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.zkforge</groupId>
-		<artifactId>ckez</artifactId>
-		<version>${ckez.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.zkforge</groupId>
-		<artifactId>timelinez</artifactId>
-		<version>${timelinez.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.zkforge</groupId>
-		<artifactId>timeplotz</artifactId>
-		<version>${timeplotz.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.zkforge</groupId>
-		<artifactId>gmapsz</artifactId>
-		<version>${gmapsz.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.zk</groupId>
-		<artifactId>zuljsp</artifactId>
-		<version>${zuljsp.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.zkoss.zkforge.el</groupId>
-		<artifactId>zcommons-el</artifactId>
-		<version>${zkel.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>commons-lang</groupId>
-		<artifactId>commons-lang</artifactId>
-		<version>${commons-lang.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.beanshell</groupId>
-		<artifactId>bsh</artifactId>
-		<version>${bsh.version}</version>
-		<scope>runtime</scope>
-	</dependency>	
   </dependencies>
   <build>
     <finalName>executor</finalName>
-	<!--
     <plugins>
             <plugin>
                     <artifactId>maven-dependency-plugin</artifactId>
@@ -207,12 +130,23 @@
                             </execution>
                     </executions>
             </plugin>
+		      <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-jar-plugin</artifactId>
+		        <configuration>
+		          <archive>
+		            <manifest>
+		              <addClasspath>true</addClasspath>
+		              <mainClass>org.zkoss.fiddler.executor.server.FiddleInstanceServer</mainClass>
+		            </manifest>
+		          </archive>
+		        </configuration>
+		      </plugin>
     </plugins>
     <resources>
             <resource>
                     <directory>${basedir}/target/dependency</directory>
             </resource>
     </resources>
-	-->
   </build>
 </project>

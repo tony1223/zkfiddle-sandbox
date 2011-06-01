@@ -22,7 +22,7 @@ import org.zkoss.fiddler.executor.utils.URLUtil;
  * 
  * @author tonyq
  */
-public class FilldeServer {
+public class FiddleInstanceServer {
 
 	private static Server server;
 
@@ -43,8 +43,8 @@ public class FilldeServer {
 		initWebappContext(server, configs);
 		try {
 			server.start();
-			// FIXME mvoe the path to config
 
+			// FIXME mvoe the path to config
 			boolean connect = pingRemote(configs.getRemoteResourceHost(),
 					"http://localhost:" + configs.getPort() + "/", "5.0.7");
 			if (connect && Configs.isLogMode()) {

@@ -3,13 +3,21 @@ package org.zkoss.fiddler.executor.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.zkoss.fiddler.executor.server.Configs;
 
-
 public class URLUtil {
-	public static String fetchContent(URL u){
+
+	public static void main(String[] args) throws MalformedURLException {
+		
+		System.out.println(URLUtil.fetchContent(new URL(
+				"http://localhost:8088/instance/?path=http://localhost:19502/&ver=5.0.7&name=TonyQ")));
+
+	}
+
+	public static String fetchContent(URL u) {
 
 		if (Configs.isLogMode())
 			System.out.println("requesting:" + u);

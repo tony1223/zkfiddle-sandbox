@@ -1,6 +1,5 @@
 package org.zkoss.fiddler.executor.resources.fetch;
 
-import org.apache.commons.lang.ObjectUtils;
 
 public class FetchedToken {
 
@@ -35,7 +34,15 @@ public class FetchedToken {
 	public boolean equals(Object obj) {
 		if (obj instanceof FetchedToken) {
 			FetchedToken token = (FetchedToken) obj;
-			boolean tokens = ObjectUtils.equals(token.getToken(), this.token);
+			
+			
+			
+			boolean tokens =  false;
+			
+			if(token.getToken() == null && this.token == null) tokens = true;
+			else if( this.token == null ) tokens = false;
+			else tokens = this.token.equals(token.getToken());
+			
 			if (!tokens)
 				return false;
 			try {
