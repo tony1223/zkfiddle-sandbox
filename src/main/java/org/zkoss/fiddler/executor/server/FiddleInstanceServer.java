@@ -10,7 +10,6 @@ import java.util.Collections;
 
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.zkoss.fiddler.executor.classloader.ProjectClassLoader;
 import org.zkoss.fiddler.executor.resources.FiddleWebappResource;
@@ -42,6 +41,11 @@ public class FiddleInstanceServer {
 
 		initConnnector(server, configs);
 		initWebappContext(server, configs);
+		
+		//TonyQ:2011/6/2
+		//if we want , here we could add on a level for server context level , 
+		//but I think the sandbox is not strong enough for this.
+		
 		try {
 			server.start();
 
@@ -127,43 +131,43 @@ public class FiddleInstanceServer {
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(configObj.getPort());
 
-		if (configObj.getEnablessl() && configObj.getSslport() != null)
-			connector.setConfidentialPort(configObj.getSslport());
+//		if (configObj.getEnablessl() && configObj.getSslport() != null)
+//			connector.setConfidentialPort(configObj.getSslport());
 
 		server.addConnector(connector);
 
-		if (configObj.getEnablessl() && configObj.getSslport() != null)
-			initSSL(server, configObj.getSslport(), configObj.getKeystore(), configObj.getPassword(),
-					configObj.getKeyPassword(), configObj.getNeedClientAuth());
+//		if (configObj.getEnablessl() && configObj.getSslport() != null)
+//			initSSL(server, configObj.getSslport(), configObj.getKeystore(), configObj.getPassword(),
+//					configObj.getKeyPassword(), configObj.getNeedClientAuth());
 
 	}
 
-	private static void initSSL(Server server, int sslport, String keystore, String password, String keyPassword,
-			boolean needClientAuth) {
-
-		if (keystore == null) {
-			throw new IllegalStateException("you need to provide argument -Drjrkeystore with -Drjrsslport");
-		}
-		if (password == null) {
-			throw new IllegalStateException("you need to provide argument -Drjrpassword with -Drjrsslport");
-		}
-		if (keyPassword == null) {
-			throw new IllegalStateException("you need to provide argument -Drjrkeypassword with -Drjrsslport");
-		}
-
-		SslSocketConnector sslConnector = new SslSocketConnector();
-		sslConnector.setKeystore(keystore);
-		sslConnector.setPassword(password);
-		sslConnector.setKeyPassword(keyPassword);
-
-		if (needClientAuth) {
-			System.err.println("Enable NeedClientAuth.");
-			sslConnector.setNeedClientAuth(needClientAuth);
-		}
-		sslConnector.setMaxIdleTime(30000);
-		sslConnector.setPort(sslport);
-
-		server.addConnector(sslConnector);
-	}
+//	private static void initSSL(Server server, int sslport, String keystore, String password, String keyPassword,
+//			boolean needClientAuth) {
+//
+//		if (keystore == null) {
+//			throw new IllegalStateException("you need to provide argument -Drjrkeystore with -Drjrsslport");
+//		}
+//		if (password == null) {
+//			throw new IllegalStateException("you need to provide argument -Drjrpassword with -Drjrsslport");
+//		}
+//		if (keyPassword == null) {
+//			throw new IllegalStateException("you need to provide argument -Drjrkeypassword with -Drjrsslport");
+//		}
+//
+//		SslSocketConnector sslConnector = new SslSocketConnector();
+//		sslConnector.setKeystore(keystore);
+//		sslConnector.setPassword(password);
+//		sslConnector.setKeyPassword(keyPassword);
+//
+//		if (needClientAuth) {
+//			System.err.println("Enable NeedClientAuth.");
+//			sslConnector.setNeedClientAuth(needClientAuth);
+//		}
+//		sslConnector.setMaxIdleTime(30000);
+//		sslConnector.setPort(sslport);
+//
+//		server.addConnector(sslConnector);
+//	}
 
 }
