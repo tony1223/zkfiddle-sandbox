@@ -46,12 +46,16 @@ public class Configs {
 	private String remoteResourceHost;
 	
 	private String localHostName;
+	
+	private String zkversion;
+	
+	private String instanceName;
 
 	public Configs() {
 		
 		/**
 		 * FIXME user a prefix as possible for system properties , 
-		 * since the name is too easy to conflick with others....
+		 * since the name is too easy to conflict with others....
 		 */
 		context = "/";
 		webAppDir = System.getProperty("webapp");
@@ -84,6 +88,11 @@ public class Configs {
 		pingRemoteInterval = Integer.getInteger("pingRemoteInterval",1000 * 60 * 30 );
 		
 		localHostName = System.getProperty("localHostName", "");
+		
+		zkversion = System.getProperty("zkversion", "");
+		
+		instanceName = System.getProperty("instName", ""); 
+		
 		
 //		enablessl = false;
 //		needClientAuth = false;
@@ -241,6 +250,11 @@ public class Configs {
 		this.pingRemoteInterval = pingRemoteInterval;
 	}
 	
+	
+	public String getFullLocalInstancePath(){
+		String portString = (getPort() != 80 ? ":" + getPort() : "");
+		return getLocalHostName() + portString + "/";
+	}
 
 	public String getRemoteResourceHost() {
 		return remoteResourceHost;
@@ -257,7 +271,6 @@ public class Configs {
 	 * 
 	 * The base rule is hostname must be accessible for the end user.
 	 * 
-	 *  TODO check if we could get the IP from remote directly
 	 * @return
 	 */
 	public String getLocalHostName() {
@@ -266,5 +279,19 @@ public class Configs {
 	
 	public void setLocalHostName(String localHostName) {
 		this.localHostName = localHostName;
+	}
+
+	
+	public String getZkversion() {
+		return zkversion;
+	}
+
+	public void setZkversion(String zkversion) {
+		this.zkversion = zkversion;
+	}
+
+	
+	public String getInstanceName() {
+		return instanceName;
 	}	
 }

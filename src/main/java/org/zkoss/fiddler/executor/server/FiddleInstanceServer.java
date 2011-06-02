@@ -41,34 +41,41 @@ public class FiddleInstanceServer {
 
 		initConnnector(server, configs);
 		initWebappContext(server, configs);
-		
-		//TonyQ:2011/6/2
-		//if we want , here we could add on a level for server context level , 
-		//but I think the sandbox is not strong enough for this.
-		
+
+		// TonyQ:2011/6/2
+		// if we want , here we could add on a level for server context level ,
+		// but I think the sandbox is not strong enough for this.
+
 		try {
 			server.start();
 
-			// FIXME mvoe the path to config
-			boolean connect = pingRemote(configs.getRemoteResourceHost(), "http://sandbox.local:" + configs.getPort()
-					+ "/", "5.0.7");
-			if (connect && Configs.isLogMode()) {
-				System.out.println("connect with " + configs.getRemoteResourceHost());
-			}
 			Thread thread = new Thread() {
 
 				public void run() {
 					while (true) {
 						try {
+							boolean connect = pingRemote(
+									configs.getRemoteResourceHost(),
+									configs.getFullLocalInstancePath(), 
+									configs.getZkversion(),
+									configs.getInstanceName());
+							
+							if (Configs.isLogMode()) {
+								if(connect)
+									System.out.println("connect with [" + configs.getRemoteResourceHost()+"]");
+								else
+									System.out.println("lost remote connection with [" + configs.getRemoteResourceHost()+"]");
+							}
+
+							if (configs.getPingRemoteInterval() == -1) {
+								break;
+							}
 							Thread.sleep(configs.getPingRemoteInterval());
-							pingRemote(configs.getRemoteResourceHost(), "http://sandbox.local:" + configs.getPort()
-									+ "/", "5.0.7");
 						} catch (ConnectException e) {
 							if (Configs.isLogMode()) {
-								System.out.println("remote lost connection:" + configs.getRemoteResourceHost());
+								System.out.println("lost remote connection:" + configs.getRemoteResourceHost());
 							}
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -84,10 +91,10 @@ public class FiddleInstanceServer {
 		return;
 	}
 
-	private static boolean pingRemote(String remotehost, String path, String version) throws MalformedURLException,
-			ConnectException {
+	private static boolean pingRemote(String remotehost, String path, String version, String name)
+			throws MalformedURLException, ConnectException {
 		String content = URLUtil.fetchContent(new URL(remotehost + "/instance/?path=" + path + "&ver=" + version
-				+ "&name=TonyQ"));
+				+ "&name=" + name));
 		return (Boolean.parseBoolean(content));
 	}
 
@@ -131,43 +138,48 @@ public class FiddleInstanceServer {
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(configObj.getPort());
 
-//		if (configObj.getEnablessl() && configObj.getSslport() != null)
-//			connector.setConfidentialPort(configObj.getSslport());
+		// if (configObj.getEnablessl() && configObj.getSslport() != null)
+		// connector.setConfidentialPort(configObj.getSslport());
 
 		server.addConnector(connector);
 
-//		if (configObj.getEnablessl() && configObj.getSslport() != null)
-//			initSSL(server, configObj.getSslport(), configObj.getKeystore(), configObj.getPassword(),
-//					configObj.getKeyPassword(), configObj.getNeedClientAuth());
+		// if (configObj.getEnablessl() && configObj.getSslport() != null)
+		// initSSL(server, configObj.getSslport(), configObj.getKeystore(),
+		// configObj.getPassword(),
+		// configObj.getKeyPassword(), configObj.getNeedClientAuth());
 
 	}
 
-//	private static void initSSL(Server server, int sslport, String keystore, String password, String keyPassword,
-//			boolean needClientAuth) {
-//
-//		if (keystore == null) {
-//			throw new IllegalStateException("you need to provide argument -Drjrkeystore with -Drjrsslport");
-//		}
-//		if (password == null) {
-//			throw new IllegalStateException("you need to provide argument -Drjrpassword with -Drjrsslport");
-//		}
-//		if (keyPassword == null) {
-//			throw new IllegalStateException("you need to provide argument -Drjrkeypassword with -Drjrsslport");
-//		}
-//
-//		SslSocketConnector sslConnector = new SslSocketConnector();
-//		sslConnector.setKeystore(keystore);
-//		sslConnector.setPassword(password);
-//		sslConnector.setKeyPassword(keyPassword);
-//
-//		if (needClientAuth) {
-//			System.err.println("Enable NeedClientAuth.");
-//			sslConnector.setNeedClientAuth(needClientAuth);
-//		}
-//		sslConnector.setMaxIdleTime(30000);
-//		sslConnector.setPort(sslport);
-//
-//		server.addConnector(sslConnector);
-//	}
+	// private static void initSSL(Server server, int sslport, String keystore,
+	// String password, String keyPassword,
+	// boolean needClientAuth) {
+	//
+	// if (keystore == null) {
+	// throw new
+	// IllegalStateException("you need to provide argument -Drjrkeystore with -Drjrsslport");
+	// }
+	// if (password == null) {
+	// throw new
+	// IllegalStateException("you need to provide argument -Drjrpassword with -Drjrsslport");
+	// }
+	// if (keyPassword == null) {
+	// throw new
+	// IllegalStateException("you need to provide argument -Drjrkeypassword with -Drjrsslport");
+	// }
+	//
+	// SslSocketConnector sslConnector = new SslSocketConnector();
+	// sslConnector.setKeystore(keystore);
+	// sslConnector.setPassword(password);
+	// sslConnector.setKeyPassword(keyPassword);
+	//
+	// if (needClientAuth) {
+	// System.err.println("Enable NeedClientAuth.");
+	// sslConnector.setNeedClientAuth(needClientAuth);
+	// }
+	// sslConnector.setMaxIdleTime(30000);
+	// sslConnector.setPort(sslport);
+	//
+	// server.addConnector(sslConnector);
+	// }
 
 }

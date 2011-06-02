@@ -3,13 +3,22 @@
     <target name="run">
     	<!--
 		Configurable properties
-		-Dautoport=true 
-		-Ddebugmsg=true 
-		-Dlibpaths=C:/workspace/executor/jar_src 
-		-Dport=10015 
-		-DremoteResourceHost=http://localhost:8088 
+
+		Must Have 
+		*-Dlibpaths=C:/workspace/executor/jar_src		
+		*( 
+			-Dautoport=true
+			or
+			-Dport=10015 
+		 )
+		*-DremoteResourceHost=http://localhost:8088 
+		*-DlocalHostName="http://sandbox.local"
+		
+		-Ddebugmsg=true
 		-DpingRemoteInterval=10000
-		-DlocalHostName="http://sandbox.local"
+		
+		-Dzkversion=5.0.7
+		-DinstName=TonyQ
 		-->
         <java classname="org.zkoss.fiddler.executor.server.FiddleInstanceServer"
 		fork="true">
