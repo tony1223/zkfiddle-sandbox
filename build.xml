@@ -14,11 +14,16 @@
 		*-DremoteResourceHost=http://localhost:8088 
 		*-DlocalHostName="http://sandbox.local"
 		
+		* instance name should match ([0-9a-zA-Z_$]+)
+		*-DinstName=TonyQ 
+		
+		
+		
 		-Ddebugmsg=true
 		-DpingRemoteInterval=10000
 		
 		-Dzkversion=5.0.7
-		-DinstName=TonyQ
+		
 		-->
         <java classname="org.zkoss.fiddler.executor.server.FiddleInstanceServer"
 		fork="true">
