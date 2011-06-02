@@ -2,11 +2,11 @@
     
     <target name="run">
         <java classname="org.zkoss.fiddler.executor.server.FiddleInstanceServer"
-         fork="true">
+		fork="true">
             <sysproperty key="autoport"
              value="true"
             />
-            <sysproperty key="debug"
+            <sysproperty key="debugmsg"
              value="true"
             />
             <sysproperty key="libpaths"

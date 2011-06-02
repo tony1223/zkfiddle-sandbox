@@ -3,6 +3,7 @@ package org.zkoss.fiddler.executor.resources.fetch;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -17,6 +18,7 @@ import org.mortbay.util.ajax.JSON;
 import org.zkoss.fiddler.executor.classloader.ByteClass;
 import org.zkoss.fiddler.executor.classloader.FiddleClass;
 import org.zkoss.fiddler.executor.classloader.FiddleClassUtil;
+import org.zkoss.fiddler.executor.classloader.ProjectClassLoader;
 import org.zkoss.fiddler.executor.server.Configs;
 import org.zkoss.fiddler.executor.utils.URLUtil;
 
@@ -27,10 +29,13 @@ public class FiddleResourceFetcher {
 	private String host;
 
 	private File base;
+	private ProjectClassLoader projectClassLoader;
+	
 
-	public FiddleResourceFetcher(String phost, File base) {
+	public FiddleResourceFetcher(String phost, File base,ProjectClassLoader pcl) {
 		host = phost;
 		this.base = base;
+		projectClassLoader = pcl;
 	}
 
 	public boolean isFetched(FetchedToken ft) {
@@ -88,9 +93,12 @@ public class FiddleResourceFetcher {
 		
 		if (fiddleClass.size() != 0) {
 			StringWriter sw = new StringWriter();
-			List<ByteClass> classlist = FiddleClassUtil.compile(fiddleClass, sw);
+			List<ByteClass> classlist = FiddleClassUtil.compile(fiddleClass, sw,projectClassLoader);
 
-			if (sw.getBuffer().length() != 0 && sw.getBuffer().indexOf("errors") != -1) { //Compile error
+			if (Configs.isLogMode()) {
+				System.out.println("compling Messages:"+sw.getBuffer().toString());
+			}
+			if (sw.getBuffer().length() != 0 && sw.getBuffer().indexOf("error") != -1) { //Compile error
 				throw new IllegalStateException("Compile Error:" + sw.getBuffer().toString());
 			}	
 
@@ -102,8 +110,7 @@ public class FiddleResourceFetcher {
 		return ret;
 	}
 	
-	// 3b10fdm
-	public List<FetchResource> fetch(FetchedToken ft) throws MalformedURLException {
+	public List<FetchResource> fetch(FetchedToken ft) throws MalformedURLException, ConnectException {
 
 		URL u = new URL(host + "/data/" + ft.getToken() +"/" +  ft.getVersion());
 		String content = URLUtil.fetchContent(u);

@@ -2,6 +2,7 @@ package org.zkoss.fiddler.executor.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -35,7 +36,7 @@ public class FiddleInstanceServer {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		Configs configs = new Configs();
+		final Configs configs = new Configs();
 		configs.validation();
 		server = new Server();
 
@@ -45,11 +46,32 @@ public class FiddleInstanceServer {
 			server.start();
 
 			// FIXME mvoe the path to config
-			boolean connect = pingRemote(configs.getRemoteResourceHost(),
-					"http://localhost:" + configs.getPort() + "/", "5.0.7");
+			boolean connect = pingRemote(configs.getRemoteResourceHost(), "http://sandbox.local:" + configs.getPort()
+					+ "/", "5.0.7");
 			if (connect && Configs.isLogMode()) {
 				System.out.println("connect with " + configs.getRemoteResourceHost());
 			}
+			Thread thread = new Thread() {
+
+				public void run() {
+					while (true) {
+						try {
+							Thread.sleep(configs.getPingRemoteInterval());
+							pingRemote(configs.getRemoteResourceHost(), "http://sandbox.local:" + configs.getPort()
+									+ "/", "5.0.7");
+						} catch (ConnectException e) {
+							if (Configs.isLogMode()) {
+								System.out.println("remote lost connection:" + configs.getRemoteResourceHost());
+							}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			};
+			thread.start();
+
 			server.join();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -58,7 +80,8 @@ public class FiddleInstanceServer {
 		return;
 	}
 
-	private static boolean pingRemote(String remotehost, String path, String version) throws MalformedURLException {
+	private static boolean pingRemote(String remotehost, String path, String version) throws MalformedURLException,
+			ConnectException {
 		String content = URLUtil.fetchContent(new URL(remotehost + "/instance/?path=" + path + "&ver=" + version
 				+ "&name=TonyQ"));
 		return (Boolean.parseBoolean(content));
@@ -94,8 +117,8 @@ public class FiddleInstanceServer {
 			webapp = new File(configs.getWebAppDir());
 		}
 
-		web.setBaseResource(new FiddleWebappResource(loader, new FiddleResourceFetcher(configs.getRemoteResourceHost(),
-				webapp), webapp));
+		FiddleResourceFetcher frf = new FiddleResourceFetcher(configs.getRemoteResourceHost(), webapp, loader);
+		web.setBaseResource(new FiddleWebappResource(loader, frf, webapp));
 
 		server.addHandler(web);
 	}

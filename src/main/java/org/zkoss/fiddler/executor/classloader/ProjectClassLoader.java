@@ -22,6 +22,8 @@ public class ProjectClassLoader extends WebAppClassLoader {
 
 	private Map<String, Class> classPool = new HashMap<String, Class>();
 
+	private StringBuffer classpathString = new StringBuffer();
+	
 	public ProjectClassLoader(WebAppContext context, String[] projectClassPath) throws IOException {
 		this(context, projectClassPath, true);
 	}
@@ -36,6 +38,10 @@ public class ProjectClassLoader extends WebAppClassLoader {
 		for (Class c : clzes) {
 			addResourceClass(c);
 		}
+	}
+
+	public String getClasspathString() {
+		return classpathString.toString();
 	}
 
 	public ProjectClassLoader(WebAppContext context, String[] projectClassPaths, boolean logger) throws IOException {
@@ -63,6 +69,7 @@ public class ProjectClassLoader extends WebAppClassLoader {
 				for (String entry : tokens) {
 					if (logger)
 						System.err.println("ProjectClassLoader: entry=" + f.getAbsolutePath() + File.separator + entry);
+					classpathString.append(f.getAbsolutePath() + File.separator + entry + ";");
 					super.addClassPath(f.getAbsolutePath() + File.separator + entry);
 				}
 			}

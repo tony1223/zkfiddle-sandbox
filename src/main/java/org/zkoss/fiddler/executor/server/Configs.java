@@ -11,6 +11,8 @@ import java.net.ServerSocket;
 
 public class Configs {
 
+	private static boolean _logMode = Boolean.getBoolean("debugmsg");
+
 	private String context;
 
 	private String webAppDir;
@@ -39,17 +41,9 @@ public class Configs {
 
 	private String configurationClasses;
 
-	// Fiddler only
-	//FIXME move to config
-	private String remoteResourceHost = "http://localhost:8088";
+	private int pingRemoteInterval ;
 
-	public String getRemoteResourceHost() {
-		return remoteResourceHost;
-	}
-
-	public void setRemoteResourceHost(String remoteResourceHost) {
-		this.remoteResourceHost = remoteResourceHost;
-	}
+	private String remoteResourceHost;
 
 	public Configs() {
 		context = "/";
@@ -73,9 +67,15 @@ public class Configs {
 		}
 		sslport = -1;
 		webAppClasslibPaths = System.getProperty("libpaths", "").split(";"); // resovleWebappClasspath();
-		parentLoaderPriority = true; // getBoolean("rjrparentloaderpriority",
-										// true);
 
+		parentLoaderPriority = true;
+		if (System.getProperty("parentloaderpriority") != null)
+			parentLoaderPriority = Boolean.getBoolean("parentloaderpriority");
+
+		remoteResourceHost = System.getProperty("remoteResourceHost", "");
+		
+		pingRemoteInterval = Integer.getInteger("pingRemoteInterval",1000 * 60 * 30 );
+		
 		enablessl = false;
 		needClientAuth = false;
 		enableJNDI = false;
@@ -174,6 +174,10 @@ public class Configs {
 				throw new IllegalStateException("SSL port :" + sslport + " already in use!");
 			}
 		}
+		
+		if("".equals(getRemoteResourceHost())){
+			throw new IllegalStateException("SSL port :" + sslport + " already in use!");
+		}
 	}
 
 	private static boolean available(int port) {
@@ -207,8 +211,24 @@ public class Configs {
 		return false;
 	}
 
-	private static boolean _logMode = Boolean.getBoolean("debug"); 
 	public static boolean isLogMode() {
 		return _logMode;
 	}
+
+	public int getPingRemoteInterval() {
+		return pingRemoteInterval;
+	}
+
+	public void setPingRemoteInterval(int pingRemoteInterval) {
+		this.pingRemoteInterval = pingRemoteInterval;
+	}
+	
+
+	public String getRemoteResourceHost() {
+		return remoteResourceHost;
+	}
+
+	public void setRemoteResourceHost(String remoteResourceHost) {
+		this.remoteResourceHost = remoteResourceHost;
+	}	
 }
