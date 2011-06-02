@@ -19,27 +19,11 @@ public class Configs {
 
 	private Integer port;
 
-//	private Integer sslport;
-
-//	private String keystore;
-
-//	private String password;
-
 	private String[] webAppClasslibPaths;
 
-//	private String keyPassword;
-
-//	private Integer scanIntervalSeconds;
 
 	private Boolean parentLoaderPriority;
 
-//	private Boolean enablessl;
-
-//	private Boolean needClientAuth;
-
-//	private Boolean enableJNDI;
-
-//	private String configurationClasses;
 
 	private int pingRemoteInterval ;
 
@@ -53,10 +37,6 @@ public class Configs {
 
 	public Configs() {
 		
-		/**
-		 * FIXME user a prefix as possible for system properties , 
-		 * since the name is too easy to conflict with others....
-		 */
 		context = "/";
 		webAppDir = System.getProperty("webapp");
 		if (webAppDir != null) {
@@ -76,7 +56,7 @@ public class Configs {
 		} else {
 			port = mport;
 		}
-//		sslport = -1;
+		
 		webAppClasslibPaths = System.getProperty("libpaths", "").split(";"); // resovleWebappClasspath();
 
 		parentLoaderPriority = true;
@@ -93,12 +73,8 @@ public class Configs {
 		
 		instanceName = System.getProperty("instName", ""); 
 		
+		instanceName = instanceName.replaceAll("\\#\\{port\\}", ""+port).replaceAll("\\#\\{ver\\}",""+zkversion);
 		
-//		enablessl = false;
-//		needClientAuth = false;
-//		enableJNDI = false;
-//		configurationClasses = "";
-
 	}
 
 	private int findAAvaiablePort(int start, int end, int retry) {
@@ -127,75 +103,27 @@ public class Configs {
 		return port;
 	}
 
-//	public Integer getSslport() {
-//		return sslport;
-//	}
-
-//	public String getKeystore() {
-//		return keystore;
-//	}
-//
-//	public String getPassword() {
-//		return password;
-//	}
 
 	public String[] getWebAppClasslibPaths() {
 		return webAppClasslibPaths;
 	}
 
-//	public String getKeyPassword() {
-//		return keyPassword;
-//	}
-//
-//	public Integer getScanIntervalSeconds() {
-//		return scanIntervalSeconds;
-//	}
 
 	public Boolean getParentLoaderPriority() {
 		return parentLoaderPriority;
 	}
 
-//	public Boolean getEnablessl() {
-//		return enablessl;
-//	}
-//
-//	public Boolean getNeedClientAuth() {
-//		return needClientAuth;
-//	}
-//
-//	public Boolean getEnableJNDI() {
-//		return enableJNDI;
-//	}
-//
-//	public String getConfigurationClasses() {
-//		return configurationClasses;
-//	}
-
 	public void validation() {
 		if (getContext() == null) {
 			throw new IllegalStateException("you need to provide argument -Dcontext");
 		}
-		// if (getWebAppDir() == null) {
-		// throw new IllegalStateException(
-		// "you need to provide argument -Drjrwebapp");
-		// }
 		if (getPort() == null ) {
 			throw new IllegalStateException("you need to provide argument -Dport");
 		}
 		
-//		if (getSslport() == null) {
-//			throw new IllegalStateException("you need to provide argument -Dport and/or -Dsslport");
-//		}
-
 		if (!available(port)) {
 			throw new IllegalStateException("port :" + port + " already in use!");
 		}
-
-//		if (getEnablessl() && getSslport() != null) {
-//			if (!available(sslport)) {
-//				throw new IllegalStateException("SSL port :" + sslport + " already in use!");
-//			}
-//		}
 		
 		if(remoteResourceHost == null || "".equals(remoteResourceHost.trim())  ){
 			throw new IllegalStateException("remote host path is empty!");
