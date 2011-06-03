@@ -4,6 +4,15 @@
     	<!--
 		Configurable properties
 
+		
+		-Dautoport=true 
+		-Ddebugmsg=true 
+		-Dlibpaths=C:/workspace/executor/jar_src 
+		-Dautoport=true 
+		-DremoteResourceHost=http://localhost:9999 
+		-DpingRemoteInterval=10000 -DlocalHostName="http://sandbox.local" -Dzkversion=5.0.7 -DinstName="TonyQ_#{port}"
+
+
 		Must Have 
 		*-Dlibpaths=C:/workspace/executor/jar_src		
 		*( 
@@ -25,19 +34,18 @@
 		-Dzkversion=5.0.7
 		
 		-->
-        <java classname="org.zkoss.fiddler.executor.server.FiddleInstanceServer"
-		fork="true">
-            <sysproperty key="autoport"
-             value="true"
-            />
-            <sysproperty key="debugmsg"
-             value="true"
-            />
-            <sysproperty key="libpaths"
-             value="C:/workspace/executor/jar_src"
-            />
+        <java classname="org.zkoss.fiddler.executor.server.FiddleInstanceServer" fork="true">
+			<sysproperty key="remoteResourceHost" value="http://zkcode.info" />
+			<sysproperty key="pingRemoteInterval" value="10000" />
+			<sysproperty key="localHostName" value="http://run.zkcode.info" />
+			<sysproperty key="instName" value="TEST_#{port}_" />
+			
+            <sysproperty key="autoport"  value="true" />
+			<sysproperty key="debugmsg" value="true" />
+            <sysproperty key="libpaths" value="/var/zkfiddlelib/util;/var/zkfiddlelib/${zkversion}" />
+			
             <classpath>
-                <fileset dir="target/dependency">
+                <fileset dir="/var/zkfiddlelib/jetty/">
                     <include name="**/*.jar"/>
                 </fileset>
             </classpath>

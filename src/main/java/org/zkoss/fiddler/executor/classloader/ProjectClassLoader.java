@@ -60,11 +60,13 @@ public class ProjectClassLoader extends WebAppClassLoader {
 		 * to split the projectClassPath, and hand each entry to the super
 		 * class, one at a time.
 		 */
-		if (projectClassPaths != null && !"".equals(projectClassPaths[0])) {
+		if (projectClassPaths != null && projectClassPaths.length >0 && !"".equals(projectClassPaths[0])) {
 			for (String projectClasspath : projectClassPaths) {
 				File f = new File(projectClasspath);
+				if(Configs.isLogMode()){
+					System.out.println("loading classpathpath:"+projectClasspath);
+				}
 				String[] tokens = f.list();
-				// String[] tokens =
 				// projectClassPath.split(String.valueOf(File.pathSeparatorChar));
 				for (String entry : tokens) {
 					if (logger)

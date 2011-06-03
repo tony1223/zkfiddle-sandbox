@@ -1,6 +1,7 @@
 package org.zkoss.fiddler.executor.utils;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
@@ -35,10 +36,13 @@ public class URLUtil {
 			}
 
 			br.close();
+		}catch(FileNotFoundException e){
+			throw new ConnectException("host reject conenction");
 		}catch(ConnectException e){
 			throw e;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if(Configs.isLogMode())
+				e.printStackTrace();
 			return null;
 		}
 		return content.toString();

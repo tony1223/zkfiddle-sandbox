@@ -40,7 +40,7 @@ public class FiddleInstanceServer {
 		server = new Server();
 
 		initConnnector(server, configs);
-		initWebappContext(server, configs);
+		initWebappContext(server, configs,"/");
 
 		// TonyQ:2011/6/2
 		// if we want , here we could add on a level for server context level ,
@@ -70,13 +70,19 @@ public class FiddleInstanceServer {
 							if (configs.getPingRemoteInterval() == -1) {
 								break;
 							}
-							Thread.sleep(configs.getPingRemoteInterval());
 						} catch (ConnectException e) {
 							if (Configs.isLogMode()) {
 								System.out.println("lost remote connection:" + configs.getRemoteResourceHost());
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							if (Configs.isLogMode()) {
+								e.printStackTrace();
+							}
+						}
+						try{
+							Thread.sleep(configs.getPingRemoteInterval());
+						}catch(Exception e){
+							
 						}
 					}
 				}
@@ -98,7 +104,7 @@ public class FiddleInstanceServer {
 		return (Boolean.parseBoolean(content));
 	}
 
-	private static void initWebappContext(Server server, Configs configs) throws IOException, URISyntaxException {
+	private static void initWebappContext(Server server, Configs configs,String contextpath) throws IOException, URISyntaxException {
 		web = new WebAppContext();
 
 		if (configs.getParentLoaderPriority()) {
@@ -106,8 +112,7 @@ public class FiddleInstanceServer {
 			web.setParentLoaderPriority(true);
 		}
 
-		web.setContextPath("/");
-		// web.setWar(configs.getWebAppDir());
+		web.setContextPath(contextpath);
 
 		web.setInitParams(Collections.singletonMap("org.mortbay.jetty.servlet.Default.useFileMappedBuffer", "true"));
 
@@ -138,48 +143,9 @@ public class FiddleInstanceServer {
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(configObj.getPort());
 
-		// if (configObj.getEnablessl() && configObj.getSslport() != null)
-		// connector.setConfidentialPort(configObj.getSslport());
-
 		server.addConnector(connector);
 
-		// if (configObj.getEnablessl() && configObj.getSslport() != null)
-		// initSSL(server, configObj.getSslport(), configObj.getKeystore(),
-		// configObj.getPassword(),
-		// configObj.getKeyPassword(), configObj.getNeedClientAuth());
 
 	}
-
-	// private static void initSSL(Server server, int sslport, String keystore,
-	// String password, String keyPassword,
-	// boolean needClientAuth) {
-	//
-	// if (keystore == null) {
-	// throw new
-	// IllegalStateException("you need to provide argument -Drjrkeystore with -Drjrsslport");
-	// }
-	// if (password == null) {
-	// throw new
-	// IllegalStateException("you need to provide argument -Drjrpassword with -Drjrsslport");
-	// }
-	// if (keyPassword == null) {
-	// throw new
-	// IllegalStateException("you need to provide argument -Drjrkeypassword with -Drjrsslport");
-	// }
-	//
-	// SslSocketConnector sslConnector = new SslSocketConnector();
-	// sslConnector.setKeystore(keystore);
-	// sslConnector.setPassword(password);
-	// sslConnector.setKeyPassword(keyPassword);
-	//
-	// if (needClientAuth) {
-	// System.err.println("Enable NeedClientAuth.");
-	// sslConnector.setNeedClientAuth(needClientAuth);
-	// }
-	// sslConnector.setMaxIdleTime(30000);
-	// sslConnector.setPort(sslport);
-	//
-	// server.addConnector(sslConnector);
-	// }
 
 }

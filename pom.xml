@@ -5,7 +5,6 @@
   <artifactId>executor</artifactId>
   <packaging>jar</packaging>
 	<properties>
-		<zk.version>5.0.6</zk.version>
 		<zkel.version>1.1.0</zkel.version>
 		<commons-lang.version>2.4</commons-lang.version>
 		<bsh.version>2.0b4</bsh.version>
@@ -27,7 +26,7 @@
 	</properties>  
   <version>0.8.0</version>
   <name>ZK Fiddle Data handler</name>
-  <url>Http://www.zkoss.org</url>
+  <url>Http://zkcode.info</url>
 	<licenses>
 		<license>
 			<name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3</name>
@@ -116,8 +115,9 @@
 	</dependency>
   </dependencies>
   <build>
-    <finalName>executor</finalName>
+    <finalName>executor-${project.version}</finalName>
     <plugins>
+    	<!--
             <plugin>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <executions>
@@ -130,6 +130,7 @@
                             </execution>
                     </executions>
             </plugin>
+			-->
 		      <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-jar-plugin</artifactId>
@@ -143,10 +144,12 @@
 		        </configuration>
 		      </plugin>
     </plugins>
+	<!--
     <resources>
             <resource>
                     <directory>${basedir}/target/dependency</directory>
             </resource>
     </resources>
+	-->
   </build>
 </project>
