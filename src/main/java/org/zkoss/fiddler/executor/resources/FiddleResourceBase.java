@@ -34,6 +34,9 @@ public class FiddleResourceBase extends Resource {
 		return false;
 	}
 
+	public String getListHTML(String base,boolean parent) {
+		return "";
+	}
 
 	public long lastModified() {
 		return new Date().getTime();

@@ -43,6 +43,7 @@
             <sysproperty key="autoport"  value="true" />
 			<sysproperty key="debugmsg" value="true" />
             <sysproperty key="libpaths" value="/var/zkfiddlelib/util;/var/zkfiddlelib/${zkversion}" />
+			<sysproperty key="zkversion" value="${zkversion}" />
 			
             <classpath>
                 <fileset dir="/var/zkfiddlelib/jetty/">

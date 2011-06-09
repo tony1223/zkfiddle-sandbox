@@ -85,7 +85,13 @@ public class FetchResource {
 			try {
 				Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newFileName), "UTF-8"));
 				try {
+					if(this.getContent() == null){
+						throw new IllegalStateException("file content is null");
+					}
 					out.write(this.getContent());
+				} catch (IllegalStateException e){
+					if (Configs.isLogMode())
+						e.printStackTrace();
 				} catch (IOException e) {
 					if (Configs.isLogMode())
 						e.printStackTrace();

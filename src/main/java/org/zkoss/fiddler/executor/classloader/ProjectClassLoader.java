@@ -71,7 +71,7 @@ public class ProjectClassLoader extends WebAppClassLoader {
 				for (String entry : tokens) {
 					if (logger)
 						System.err.println("ProjectClassLoader: entry=" + f.getAbsolutePath() + File.separator + entry);
-					classpathString.append(f.getAbsolutePath() + File.separator + entry + ";");
+					classpathString.append(f.getAbsolutePath() + File.separator + entry + System.getProperty("path.separator"));
 					super.addClassPath(f.getAbsolutePath() + File.separator + entry);
 				}
 			}

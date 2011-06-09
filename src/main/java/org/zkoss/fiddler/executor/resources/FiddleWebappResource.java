@@ -120,7 +120,8 @@ public class FiddleWebappResource extends FiddleResourceBase {
 	public String[] list() {
 		throw new UnsupportedOperationException("Unsupported");
 	}
-
+	
+	
 	public Resource addPath(String path) throws IOException, MalformedURLException {
 		if (Configs.isLogMode())
 			System.out.println("fetching:" + path);
@@ -191,12 +192,12 @@ public class FiddleWebappResource extends FiddleResourceBase {
 						}
 					}
 
-					for (FetchResource fr : resources) {
+					for (FetchResource fetchedResource : resources) {
 						if (Configs.isLogMode())
-							System.out.println("adding to pool:" + (key +"/" + fr.getFileName()));
-						fr.saveContent();
+							System.out.println("adding to pool:" + (key +"/" + fetchedResource.getFileName()));
+						fetchedResource.saveContent();
 						try {
-							resourcePool.put(key +"/" + fr.getFileName(), new FileResource(fr.getStoreURL()));
+							resourcePool.put(key +"/" + fetchedResource.getFileName(), new FileResource(fetchedResource.getStoreURL()));
 						} catch (URISyntaxException e) {
 							if (Configs.isLogMode())
 								e.printStackTrace();
