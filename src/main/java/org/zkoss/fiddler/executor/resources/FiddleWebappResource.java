@@ -134,7 +134,11 @@ public class FiddleWebappResource extends FiddleResourceBase {
 		} else if (path.endsWith(".gz") || path.indexOf("favicon.ico") != -1) {
 			return new EmptyResource();
 		} else if ("/WEB-INF/zk.xml".equals(path)) {
-			return new EmptyResource();
+			try {
+				return new FileResource(getClass().getClassLoader().getResource("zk.xml"));
+			} catch (URISyntaxException e) {
+				return new EmptyResource();
+			}
 		} else if ("WEB-INF/".equals(path)) {
 			return new FiddleWEBINFResourceHandler();
 		} else if ("/".equals(path)) {

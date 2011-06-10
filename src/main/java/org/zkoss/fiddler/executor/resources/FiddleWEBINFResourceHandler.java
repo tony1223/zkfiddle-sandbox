@@ -14,7 +14,7 @@ public class FiddleWEBINFResourceHandler extends FiddleResourceBase {
 	}
 
 	public String[] list() {
-		return new String[] { "web.xml" };
+		return new String[] { "web.xml" , "zk.xml"};
 	}
 
 	public boolean isDirectory() {
@@ -22,9 +22,9 @@ public class FiddleWEBINFResourceHandler extends FiddleResourceBase {
 	}
 
 	public Resource addPath(String path) throws IOException, MalformedURLException {
-		if ("web.xml".equals(path)) {
+		if ("web.xml".equals(path) || "zk.xml".equals(path)) {
 			try {
-				return new FileResource(getClass().getClassLoader().getResource("web.xml"));
+				return new FileResource(getClass().getClassLoader().getResource(path));
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
