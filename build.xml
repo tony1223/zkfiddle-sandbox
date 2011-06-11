@@ -7,7 +7,7 @@
 		
 		-Dautoport=true 
 		-Ddebugmsg=true 
-		-Dlibpaths=C:/workspace/executor/jar_src 
+		-Dlibpaths=C:/workspace/executor/jar_src/utils;C:/workspace/executor/jar_src/zkcore/5.0.7.1
 		-Dautoport=true 
 		-DremoteResourceHost=http://localhost:9999 
 		-DpingRemoteInterval=10000 -DlocalHostName="http://sandbox.local" -Dzkversion=5.0.7 -DinstName="TonyQ_#{port}"

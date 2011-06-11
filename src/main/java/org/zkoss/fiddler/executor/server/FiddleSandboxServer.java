@@ -22,7 +22,7 @@ import org.zkoss.fiddler.executor.utils.URLUtil;
  * 
  * @author tonyq
  */
-public class FiddleInstanceServer {
+public class FiddleSandboxServer {
 
 	private static Server server;
 
@@ -99,7 +99,7 @@ public class FiddleInstanceServer {
 
 	private static boolean pingRemote(String remotehost, String path, String version, String name)
 			throws MalformedURLException, ConnectException {
-		String content = URLUtil.fetchContent(new URL(remotehost + "/instance/?path=" + path + "&ver=" + version
+		String content = URLUtil.fetchContent(new URL(remotehost + "/sandbox/?path=" + path + "&ver=" + version
 				+ "&name=" + name));
 		return (Boolean.parseBoolean(content));
 	}
