@@ -88,6 +88,9 @@ public class FiddleResourceFetcher {
 		for(FetchResource fr:resources){
 			if (fr.getType() == 1) {
 				fiddleClass.add(new FiddleClass(fr.getFileName(), fr.getContent()));
+				if(fr.getContent().indexOf("System.exit")!= -1){
+					throw new IllegalStateException("Compile Error: ZK Fiddle Sandbox don't allow System.exit in your java class:\n"+fr.getContent());
+				}
 			}
 		}
 		
