@@ -37,7 +37,8 @@ public class Configs {
 
 	public Configs() {
 		
-		context = "/";
+		context = System.getProperty("context", "/test");
+		
 		webAppDir = System.getProperty("webapp");
 		if (webAppDir != null) {
 			if (webAppDir.matches("^\".*?\"$")) {
@@ -181,7 +182,12 @@ public class Configs {
 	
 	public String getFullLocalInstancePath(){
 		String portString = (getPort() != 80 ? ":" + getPort() : "");
-		return getLocalHostName() + portString + "/";
+		String context = getContext();
+		if(!context.endsWith("/")){
+			context += "/";
+		}
+		
+		return getLocalHostName() + portString + context;
 	}
 
 	public String getRemoteResourceHost() {

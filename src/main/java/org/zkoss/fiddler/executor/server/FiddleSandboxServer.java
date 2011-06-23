@@ -40,7 +40,7 @@ public class FiddleSandboxServer {
 		server = new Server();
 
 		initConnnector(server, configs);
-		initWebappContext(server, configs,"/");
+		initWebappContext(server, configs,configs.getContext());
 
 		// TonyQ:2011/6/2
 		// if we want , here we could add on a level for server context level ,
