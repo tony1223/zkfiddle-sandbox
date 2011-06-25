@@ -2,7 +2,6 @@ package org.zkoss.fiddler.executor.resources.fetch;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -11,6 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
 
 import org.mortbay.resource.FileResource;
 import org.mortbay.resource.Resource;
@@ -82,6 +84,7 @@ public class FiddleResourceFetcher {
 	 * @param resources
 	 * @return
 	 */
+	@SuppressWarnings("restriction")
 	public List<Class> compile(List<FetchResource> resources ) {
 		 List<Class> ret = new ArrayList<Class>();
 		List<FiddleClass> fiddleClass =new ArrayList<FiddleClass>();
@@ -95,16 +98,22 @@ public class FiddleResourceFetcher {
 		}
 		
 		if (fiddleClass.size() != 0) {
-			StringWriter sw = new StringWriter();
-			List<ByteClass> classlist = FiddleClassUtil.compile(fiddleClass, sw,projectClassLoader);
+			StringBuffer sw = new StringBuffer();
+			
+			DiagnosticCollector<Diagnostic> diagnostics = new DiagnosticCollector<Diagnostic>();
+			List<ByteClass> classlist = FiddleClassUtil.compile(fiddleClass, null, diagnostics, projectClassLoader);
 
-			if (Configs.isLogMode()) {
-				System.out.println("compling Messages:"+sw.getBuffer().toString());
+			boolean error = false;
+			for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
+				if (Diagnostic.Kind.ERROR == diagnostic.getKind()) {
+					error = true;
+					sw.append(diagnostic.toString() +"\n\n");
+				}
 			}
-			if (sw.getBuffer().length() != 0 && sw.getBuffer().indexOf("error") != -1) { //Compile error
-				throw new IllegalStateException("Compile Error:" + sw.getBuffer().toString());
-			}	
-
+			if (error) {
+				throw new IllegalStateException("Compile Error:" + sw.toString());
+			}
+			
 			/* Note that one resource might mapping to multiple resource , so we didn't record resource-class mapping. */
 			for (ByteClass bc : classlist) {
 				ret.add(bc.getCls());

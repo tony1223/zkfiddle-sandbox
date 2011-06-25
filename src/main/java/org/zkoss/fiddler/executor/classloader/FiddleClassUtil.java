@@ -1,10 +1,10 @@
 package org.zkoss.fiddler.executor.classloader;
 
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
@@ -55,20 +55,21 @@ public class FiddleClassUtil {
 	// method.invoke(null);
 	// }
 
-	public static List<ByteClass> compile(List<FiddleClass> waitingForCompile, Writer pr, ProjectClassLoader pcl) {
-		return compile(waitingForCompile, pr, pcl.getClasspathString(), pcl);
+	public static List<ByteClass> compile(List<FiddleClass> waitingForCompile, Writer pr,
+			DiagnosticCollector diagnostics, ProjectClassLoader pcl) {
+		return compile(waitingForCompile, pr, diagnostics, pcl.getClasspathString(), pcl);
 	}
 
 	public static List<ByteClass> compile(List<FiddleClass> waitingForCompile) {
-		return compile(waitingForCompile, new PrintWriter(System.err), null, null);
+		return compile(waitingForCompile, null, null, null);
 	}
 
 	public static List<ByteClass> compile(List<FiddleClass> waitingForCompile, String classPath) {
-		return compile(waitingForCompile, new PrintWriter(System.err), classPath, null);
+		return compile(waitingForCompile, null, null, classPath, null);
 	}
 
-	public static List<ByteClass> compile(List<FiddleClass> waitingForCompile, Writer pr, String classPath,
-			ClassLoader test) {
+	public static List<ByteClass> compile(List<FiddleClass> waitingForCompile, Writer pr,
+			DiagnosticCollector diagnostics, String classPath, ClassLoader test) {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		List<JavaFileObject> tasks = new ArrayList<JavaFileObject>();
 
@@ -89,7 +90,7 @@ public class FiddleClassUtil {
 				System.out.println("compiling with classpath:" + classPath);
 			}
 		}
-		compiler.getTask(pr, fileMgr, null, arg, null, tasks).call();
+		compiler.getTask(pr, fileMgr, diagnostics, arg, null, tasks).call();
 
 		List<ByteClass> list = fileMgr.getByteClasses();
 		// ByteArrayClassConverter clsLoader = new
