@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import org.mortbay.resource.FileResource;
 import org.mortbay.resource.Resource;
 import org.zkoss.fiddler.executor.classloader.ProjectClassLoader;
+import org.zkoss.fiddler.executor.exceptions.JavaSecurityException;
 import org.zkoss.fiddler.executor.resources.fetch.FetchResource;
 import org.zkoss.fiddler.executor.resources.fetch.FetchedToken;
 import org.zkoss.fiddler.executor.resources.fetch.FiddleResourceFetcher;
@@ -192,6 +193,16 @@ public class FiddleWebappResource extends FiddleResourceBase {
 						for (FetchResource fr : resources) {
 							fr.setFileName("index.html");
 							fr.setContent("<pre>Because your sample have java compile error so it can't show up ,\n"
+									+ e.getMessage() +"</pre>");
+						}
+					}catch(JavaSecurityException e){
+						if(Configs.isLogMode()){
+							System.err.println("Because your sample violate our security rule so it can't show up ,\n"
+									+ e.getMessage());
+						}
+						for (FetchResource fr : resources) {
+							fr.setFileName("index.html");
+							fr.setContent("<pre>Because your sample violate our security rule so it can't show up ,\n"
 									+ e.getMessage() +"</pre>");
 						}
 					}

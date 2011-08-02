@@ -21,9 +21,11 @@ import org.zkoss.fiddler.executor.classloader.ByteClass;
 import org.zkoss.fiddler.executor.classloader.FiddleClass;
 import org.zkoss.fiddler.executor.classloader.FiddleClassUtil;
 import org.zkoss.fiddler.executor.classloader.ProjectClassLoader;
+import org.zkoss.fiddler.executor.exceptions.JavaSecurityException;
 import org.zkoss.fiddler.executor.server.Configs;
 import org.zkoss.fiddler.executor.utils.URLUtil;
 
+@SuppressWarnings("restriction")
 public class FiddleResourceFetcher {
 
 	Map<FetchedToken, List<FetchResource>> cacheResult = new HashMap<FetchedToken, List<FetchResource>>();
@@ -33,6 +35,7 @@ public class FiddleResourceFetcher {
 	private File base;
 	private ProjectClassLoader projectClassLoader;
 	
+	private static final int TYPE_JAVA = 1;
 
 	public FiddleResourceFetcher(String phost, File base,ProjectClassLoader pcl) {
 		host = phost;
@@ -84,15 +87,17 @@ public class FiddleResourceFetcher {
 	 * @param resources
 	 * @return
 	 */
-	@SuppressWarnings("restriction")
 	public List<Class> compile(List<FetchResource> resources ) {
 		 List<Class> ret = new ArrayList<Class>();
 		List<FiddleClass> fiddleClass =new ArrayList<FiddleClass>();
+		
 		for(FetchResource fr:resources){
-			if (fr.getType() == 1) {
+			if (fr.getType() == TYPE_JAVA) {
 				fiddleClass.add(new FiddleClass(fr.getFileName(), fr.getContent()));
 				if(fr.getContent().indexOf("System.exit")!= -1){
-					throw new IllegalStateException("Compile Error: ZK Fiddle Sandbox don't allow System.exit in your java class:\n"+fr.getContent());
+					throw new JavaSecurityException("ZK Fiddle Sandbox don't allow System.exit in your java class:\n"+fr.getContent());
+				}else if(fr.getContent().indexOf("getRuntime()")!=-1){
+					throw new JavaSecurityException("ZK fiddle don't allow you to run system command.");
 				}
 			}
 		}
