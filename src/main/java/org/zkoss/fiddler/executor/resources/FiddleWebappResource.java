@@ -7,26 +7,34 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+
 import org.mortbay.resource.FileResource;
 import org.mortbay.resource.Resource;
-import org.mortbay.resource.URLResource;
-import org.zkoss.fiddler.executor.classloader.ProjectClassLoader;
+import org.zkoss.fiddler.executor.classloader.ByteClass;
+import org.zkoss.fiddler.executor.classloader.FiddleClass;
+import org.zkoss.fiddler.executor.classloader.FiddleClassUtil;
 import org.zkoss.fiddler.executor.exceptions.JavaSecurityException;
 import org.zkoss.fiddler.executor.resources.fetch.FetchResource;
 import org.zkoss.fiddler.executor.resources.fetch.FetchedToken;
 import org.zkoss.fiddler.executor.resources.fetch.FiddleResourceFetcher;
 import org.zkoss.fiddler.executor.server.Configs;
+import org.zkoss.fiddler.executor.server.SandboxWebappContext;
 
+@SuppressWarnings("restriction")
 public class FiddleWebappResource extends FiddleResourceBase {
-
+	private static final int TYPE_JAVA = 1;
+	
 	private File baseFile;
 
-	private ProjectClassLoader classesLoader;
+	private SandboxWebappContext context;
 
 	private FiddleResourceFetcher fetcher;
 
@@ -35,10 +43,10 @@ public class FiddleWebappResource extends FiddleResourceBase {
 	private HashMap<String, Resource> resourcePool = new HashMap<String, Resource>();
 	private FileResource base ;
 
-	public FiddleWebappResource(ProjectClassLoader projectLoader, FiddleResourceFetcher fetcher ,File f) {
+	public FiddleWebappResource(SandboxWebappContext webcontext, FiddleResourceFetcher fetcher ,File f) {
 		this.fetcher = fetcher;
 
-		classesLoader = projectLoader;
+		context = webcontext;
 		try {
 			base = new FileResource(f.toURI().toURL());
 		} catch (MalformedURLException e1) {
@@ -185,7 +193,7 @@ public class FiddleWebappResource extends FiddleResourceBase {
 				if (resources != null) {
 
 					try {
-						classesLoader.addAllResourceClasses(fetcher.compile(resources));
+						context.getClassLoader().addAllResourceClasses(compile(resources));
 					} catch (IllegalStateException e) {
 						if(Configs.isLogMode()){
 							System.err.println("Because your sample have java compile error so it can't show up ,\n"
@@ -224,4 +232,56 @@ public class FiddleWebappResource extends FiddleResourceBase {
 			}
 		}
 	}
+	
+	/**
+	 * 
+	 * @throws IllegalStateException
+	 *             when Compile Error
+	 * @param resources
+	 * @return
+	 */
+	public List<Class> compile(List<FetchResource> resources) {
+		List<Class> ret = new ArrayList<Class>();
+		List<FiddleClass> fiddleClass = new ArrayList<FiddleClass>();
+
+		for (FetchResource fr : resources) {
+			if (fr.getType() == TYPE_JAVA) {
+				fiddleClass.add(new FiddleClass(fr.getFileName(), fr.getContent()));
+				if (fr.getContent().indexOf("System.exit") != -1) {
+					throw new JavaSecurityException("ZK Fiddle Sandbox don't allow System.exit in your java class:\n"
+							+ fr.getContent());
+				} else if (fr.getContent().indexOf("getRuntime()") != -1) {
+					throw new JavaSecurityException("ZK fiddle don't allow you to run system command.");
+				}
+			}
+		}
+
+		if (fiddleClass.size() != 0) {
+			StringBuffer sw = new StringBuffer();
+
+			DiagnosticCollector<Diagnostic> diagnostics = new DiagnosticCollector<Diagnostic>();
+			List<ByteClass> classlist = FiddleClassUtil.compile(fiddleClass, null, diagnostics,context.getClassLoader() );
+
+			boolean error = false;
+			for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
+				if (Diagnostic.Kind.ERROR == diagnostic.getKind()) {
+					error = true;
+					sw.append(diagnostic.toString() + "\n\n");
+				}
+			}
+			if (error) {
+				throw new IllegalStateException("Compile Error:" + sw.toString());
+			}
+
+			/*
+			 * Note that one resource might mapping to multiple resource , so we
+			 * didn't record resource-class mapping.
+			 */
+			for (ByteClass bc : classlist) {
+				ret.add(bc.getCls());
+			}
+		}
+		return ret;
+	}
+
 }

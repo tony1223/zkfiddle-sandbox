@@ -11,21 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-
 import org.mortbay.resource.FileResource;
 import org.mortbay.resource.Resource;
 import org.mortbay.util.ajax.JSON;
-import org.zkoss.fiddler.executor.classloader.ByteClass;
-import org.zkoss.fiddler.executor.classloader.FiddleClass;
-import org.zkoss.fiddler.executor.classloader.FiddleClassUtil;
-import org.zkoss.fiddler.executor.classloader.ProjectClassLoader;
-import org.zkoss.fiddler.executor.exceptions.JavaSecurityException;
 import org.zkoss.fiddler.executor.server.Configs;
 import org.zkoss.fiddler.executor.utils.URLUtil;
 
-@SuppressWarnings("restriction")
 public class FiddleResourceFetcher {
 
 	Map<FetchedToken, List<FetchResource>> cacheResult = new HashMap<FetchedToken, List<FetchResource>>();
@@ -34,18 +25,12 @@ public class FiddleResourceFetcher {
 
 	private File base;
 
-	
 	/**
 	 * we need a classloader to provide classpath
 	 */
-	private ProjectClassLoader projectClassLoader;
-
-	private static final int TYPE_JAVA = 1;
-
-	public FiddleResourceFetcher(String phost, File base, ProjectClassLoader pcl) {
+	public FiddleResourceFetcher(String phost, File base) {
 		host = phost;
 		this.base = base;
-		projectClassLoader = pcl;
 	}
 
 	public boolean isFetched(FetchedToken ft) {
@@ -83,57 +68,6 @@ public class FiddleResourceFetcher {
 			list.add(fr);
 		}
 		return list;
-	}
-
-	/**
-	 * 
-	 * @throws IllegalStateException
-	 *             when Compile Error
-	 * @param resources
-	 * @return
-	 */
-	public List<Class> compile(List<FetchResource> resources) {
-		List<Class> ret = new ArrayList<Class>();
-		List<FiddleClass> fiddleClass = new ArrayList<FiddleClass>();
-
-		for (FetchResource fr : resources) {
-			if (fr.getType() == TYPE_JAVA) {
-				fiddleClass.add(new FiddleClass(fr.getFileName(), fr.getContent()));
-				if (fr.getContent().indexOf("System.exit") != -1) {
-					throw new JavaSecurityException("ZK Fiddle Sandbox don't allow System.exit in your java class:\n"
-							+ fr.getContent());
-				} else if (fr.getContent().indexOf("getRuntime()") != -1) {
-					throw new JavaSecurityException("ZK fiddle don't allow you to run system command.");
-				}
-			}
-		}
-
-		if (fiddleClass.size() != 0) {
-			StringBuffer sw = new StringBuffer();
-
-			DiagnosticCollector<Diagnostic> diagnostics = new DiagnosticCollector<Diagnostic>();
-			List<ByteClass> classlist = FiddleClassUtil.compile(fiddleClass, null, diagnostics, projectClassLoader);
-
-			boolean error = false;
-			for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
-				if (Diagnostic.Kind.ERROR == diagnostic.getKind()) {
-					error = true;
-					sw.append(diagnostic.toString() + "\n\n");
-				}
-			}
-			if (error) {
-				throw new IllegalStateException("Compile Error:" + sw.toString());
-			}
-
-			/*
-			 * Note that one resource might mapping to multiple resource , so we
-			 * didn't record resource-class mapping.
-			 */
-			for (ByteClass bc : classlist) {
-				ret.add(bc.getCls());
-			}
-		}
-		return ret;
 	}
 
 	public List<FetchResource> fetch(FetchedToken ft) throws MalformedURLException, ConnectException {

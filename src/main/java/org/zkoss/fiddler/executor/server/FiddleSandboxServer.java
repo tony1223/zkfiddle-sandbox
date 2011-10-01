@@ -38,7 +38,6 @@ public class FiddleSandboxServer {
 			server.start();
 
 			Thread thread = new Thread() {
-
 				public void run() {
 					while (true) {
 						try {
@@ -76,6 +75,22 @@ public class FiddleSandboxServer {
 				}
 			};
 			thread.start();
+
+			
+//			Thread threadrestart = new Thread() {
+//				public void run() {
+//					while (true) {
+//						try{
+//							Thread.sleep( 60 * 60*1000);
+//							server.restart();
+//						}catch(Exception e){
+//							
+//						}
+//						
+//					}
+//				}
+//			};
+//			threadrestart.start();
 
 			server.join();
 		} catch (Exception e) {
