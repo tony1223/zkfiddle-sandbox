@@ -33,11 +33,16 @@ public class FiddleResourceFetcher {
 	private String host;
 
 	private File base;
-	private ProjectClassLoader projectClassLoader;
+
 	
+	/**
+	 * we need a classloader to provide classpath
+	 */
+	private ProjectClassLoader projectClassLoader;
+
 	private static final int TYPE_JAVA = 1;
 
-	public FiddleResourceFetcher(String phost, File base,ProjectClassLoader pcl) {
+	public FiddleResourceFetcher(String phost, File base, ProjectClassLoader pcl) {
 		host = phost;
 		this.base = base;
 		projectClassLoader = pcl;
@@ -62,8 +67,7 @@ public class FiddleResourceFetcher {
 				+ "/")));
 	}
 
-	
-	private List<FetchResource> parseResourceList(String content,String storeParent){
+	private List<FetchResource> parseResourceList(String content, String storeParent) {
 		Map map = (Map) JSON.parse(content);
 		Object[] resources = (Object[]) map.get("resources");
 		List<FetchResource> list = new ArrayList<FetchResource>();
@@ -77,34 +81,36 @@ public class FiddleResourceFetcher {
 			fr.setContent((String) resource.get("content"));
 			fr.setStoreBasePath(base.getAbsolutePath() + storeParent + File.separator);
 			list.add(fr);
-		}		
+		}
 		return list;
 	}
-	
+
 	/**
 	 * 
-	 * @throws IllegalStateException when Compile Error
+	 * @throws IllegalStateException
+	 *             when Compile Error
 	 * @param resources
 	 * @return
 	 */
-	public List<Class> compile(List<FetchResource> resources ) {
-		 List<Class> ret = new ArrayList<Class>();
-		List<FiddleClass> fiddleClass =new ArrayList<FiddleClass>();
-		
-		for(FetchResource fr:resources){
+	public List<Class> compile(List<FetchResource> resources) {
+		List<Class> ret = new ArrayList<Class>();
+		List<FiddleClass> fiddleClass = new ArrayList<FiddleClass>();
+
+		for (FetchResource fr : resources) {
 			if (fr.getType() == TYPE_JAVA) {
 				fiddleClass.add(new FiddleClass(fr.getFileName(), fr.getContent()));
-				if(fr.getContent().indexOf("System.exit")!= -1){
-					throw new JavaSecurityException("ZK Fiddle Sandbox don't allow System.exit in your java class:\n"+fr.getContent());
-				}else if(fr.getContent().indexOf("getRuntime()")!=-1){
+				if (fr.getContent().indexOf("System.exit") != -1) {
+					throw new JavaSecurityException("ZK Fiddle Sandbox don't allow System.exit in your java class:\n"
+							+ fr.getContent());
+				} else if (fr.getContent().indexOf("getRuntime()") != -1) {
 					throw new JavaSecurityException("ZK fiddle don't allow you to run system command.");
 				}
 			}
 		}
-		
+
 		if (fiddleClass.size() != 0) {
 			StringBuffer sw = new StringBuffer();
-			
+
 			DiagnosticCollector<Diagnostic> diagnostics = new DiagnosticCollector<Diagnostic>();
 			List<ByteClass> classlist = FiddleClassUtil.compile(fiddleClass, null, diagnostics, projectClassLoader);
 
@@ -112,24 +118,27 @@ public class FiddleResourceFetcher {
 			for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
 				if (Diagnostic.Kind.ERROR == diagnostic.getKind()) {
 					error = true;
-					sw.append(diagnostic.toString() +"\n\n");
+					sw.append(diagnostic.toString() + "\n\n");
 				}
 			}
 			if (error) {
 				throw new IllegalStateException("Compile Error:" + sw.toString());
 			}
-			
-			/* Note that one resource might mapping to multiple resource , so we didn't record resource-class mapping. */
+
+			/*
+			 * Note that one resource might mapping to multiple resource , so we
+			 * didn't record resource-class mapping.
+			 */
 			for (ByteClass bc : classlist) {
 				ret.add(bc.getCls());
 			}
 		}
 		return ret;
 	}
-	
+
 	public List<FetchResource> fetch(FetchedToken ft) throws MalformedURLException, ConnectException {
 
-		URL u = new URL(host + "/data/" + ft.getToken() +"/" +  ft.getVersion());
+		URL u = new URL(host + "/data/" + ft.getToken() + "/" + ft.getVersion());
 		String content = URLUtil.fetchContent(u);
 
 		if ("".equals(content)) {
@@ -137,11 +146,10 @@ public class FiddleResourceFetcher {
 			return null;
 		}
 
-		String parent =  File.separator + ft.getToken() + File.separator + ft.getVersion() ;
-		List<FetchResource> resources = parseResourceList(content,parent);
+		String parent = File.separator + ft.getToken() + File.separator + ft.getVersion();
+		List<FetchResource> resources = parseResourceList(content, parent);
 		cacheResult.put(ft, resources);
 		return resources;
 	}
-	
 
 }

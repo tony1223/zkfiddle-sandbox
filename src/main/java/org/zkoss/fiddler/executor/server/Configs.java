@@ -3,6 +3,8 @@ package org.zkoss.fiddler.executor.server;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A configuration object to handle the complicated parse job , and make thing
@@ -19,13 +21,12 @@ public class Configs {
 
 	private Integer port;
 
-	private String[] webAppClasslibPaths;
-
+	private List<String> webAppClasslibPaths;
 
 	private Boolean parentLoaderPriority;
 
 
-	private int pingRemoteInterval ;
+	private int pingRemoteInterval = 10000 ;
 
 	private String remoteResourceHost;
 	
@@ -58,7 +59,7 @@ public class Configs {
 			port = mport;
 		}
 		
-		webAppClasslibPaths = System.getProperty("libpaths", "").split(";"); // resovleWebappClasspath();
+		webAppClasslibPaths = Arrays.asList(System.getProperty("libpaths", "").split(";")); // resovleWebappClasspath();
 
 		parentLoaderPriority = true;
 		if (System.getProperty("parentloaderpriority") != null)
@@ -105,7 +106,7 @@ public class Configs {
 	}
 
 
-	public String[] getWebAppClasslibPaths() {
+	public List<String> getWebAppClasslibPaths() {
 		return webAppClasslibPaths;
 	}
 

@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import org.mortbay.resource.FileResource;
 import org.mortbay.resource.Resource;
+import org.mortbay.resource.URLResource;
 import org.zkoss.fiddler.executor.classloader.ProjectClassLoader;
 import org.zkoss.fiddler.executor.exceptions.JavaSecurityException;
 import org.zkoss.fiddler.executor.resources.fetch.FetchResource;

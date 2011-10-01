@@ -1,4 +1,4 @@
-<project name="executor" default="help" basedir=".">
+<project name="executor" basedir=".">
     
     <target name="run">
     	<!--

@@ -24,7 +24,7 @@ public class ProjectClassLoader extends WebAppClassLoader {
 
 	private StringBuffer classpathString = new StringBuffer();
 	
-	public ProjectClassLoader(WebAppContext context, String[] projectClassPath) throws IOException {
+	public ProjectClassLoader(WebAppContext context, List<String> projectClassPath) throws IOException {
 		this(context, projectClassPath, true);
 	}
 
@@ -44,7 +44,7 @@ public class ProjectClassLoader extends WebAppClassLoader {
 		return classpathString.toString();
 	}
 
-	public ProjectClassLoader(WebAppContext context, String[] projectClassPaths, boolean logger) throws IOException {
+	public ProjectClassLoader(WebAppContext context, List<String> projectClassPaths, boolean logger) throws IOException {
 		super(context);
 
 		/*
@@ -60,7 +60,7 @@ public class ProjectClassLoader extends WebAppClassLoader {
 		 * to split the projectClassPath, and hand each entry to the super
 		 * class, one at a time.
 		 */
-		if (projectClassPaths != null && projectClassPaths.length >0 && !"".equals(projectClassPaths[0])) {
+		if (projectClassPaths != null && projectClassPaths.size() >0 && !"".equals(projectClassPaths.get(0))) {
 			for (String projectClasspath : projectClassPaths) {
 				File f = new File(projectClasspath);
 				if(Configs.isLogMode()){

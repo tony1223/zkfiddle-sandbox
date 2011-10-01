@@ -1,19 +1,9 @@
 package org.zkoss.fiddler.executor.server;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collections;
 
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
-import org.zkoss.fiddler.executor.classloader.ProjectClassLoader;
-import org.zkoss.fiddler.executor.resources.FiddleWebappResource;
-import org.zkoss.fiddler.executor.resources.fetch.FiddleResourceFetcher;
 import org.zkoss.fiddler.executor.utils.URLUtil;
 
 /**
@@ -24,9 +14,7 @@ import org.zkoss.fiddler.executor.utils.URLUtil;
  */
 public class FiddleSandboxServer {
 
-	private static Server server;
-
-	private static WebAppContext web;
+	private static SandboxServer server;
 
 	/**
 	 * Main function, starts the jetty server.
@@ -37,10 +25,10 @@ public class FiddleSandboxServer {
 
 		final Configs configs = new Configs();
 		configs.validation();
-		server = new Server();
-
-		initConnnector(server, configs);
-		initWebappContext(server, configs,configs.getContext());
+		server = new SandboxServer(configs.getPort());
+		
+		//Check if we could redirect to another link first
+		server.addContext(configs.getContext(), configs.getWebAppDir(), configs.getWebAppClasslibPaths(), configs.getRemoteResourceHost());
 
 		// TonyQ:2011/6/2
 		// if we want , here we could add on a level for server context level ,
@@ -99,53 +87,16 @@ public class FiddleSandboxServer {
 
 	private static boolean pingRemote(String remotehost, String path, String version, String name)
 			throws MalformedURLException, ConnectException {
+		
+		//new spec should be 
+		//1.path=root path
+		//2.contexts = [[context,ver,name],[context,ver,name],[context,ver,name]]
+		// Don't forget for url encoding and decoding.
+		
 		String content = URLUtil.fetchContent(new URL(remotehost + "/sandbox/?path=" + path + "&ver=" + version
 				+ "&name=" + name));
 		return (Boolean.parseBoolean(content));
 	}
 
-	private static void initWebappContext(Server server, Configs configs,String contextpath) throws IOException, URISyntaxException {
-		web = new WebAppContext();
-
-		if (configs.getParentLoaderPriority()) {
-			System.err.println("ParentLoaderPriority enabled");
-			web.setParentLoaderPriority(true);
-		}
-
-		web.setContextPath(contextpath);
-
-		web.setInitParams(Collections.singletonMap("org.mortbay.jetty.servlet.Default.useFileMappedBuffer", "true"));
-
-		ProjectClassLoader loader = new ProjectClassLoader(web, configs.getWebAppClasslibPaths());
-		web.setClassLoader(loader);
-
-		// ZK web.xml configuration
-		File webapp = null;
-
-		if (configs.getWebAppDir() == null) {
-
-			webapp = File.createTempFile("resource", "tmp");
-			webapp.delete();
-			webapp.mkdir();
-			webapp.deleteOnExit();
-
-		} else {
-			webapp = new File(configs.getWebAppDir());
-		}
-
-		FiddleResourceFetcher frf = new FiddleResourceFetcher(configs.getRemoteResourceHost(), webapp, loader);
-		web.setBaseResource(new FiddleWebappResource(loader, frf, webapp));
-
-		server.addHandler(web);
-	}
-
-	private static void initConnnector(Server server, Configs configObj) {
-		SelectChannelConnector connector = new SelectChannelConnector();
-		connector.setPort(configObj.getPort());
-
-		server.addConnector(connector);
-
-
-	}
 
 }
