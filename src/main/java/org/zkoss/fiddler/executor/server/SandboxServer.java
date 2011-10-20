@@ -35,7 +35,7 @@ public class SandboxServer {
 			throws IOException {
 		synchronized (contextMap) {
 			if (contextMap.containsKey(contextPath)) {
-				throw new IllegalStateException("Context already exists in the web application.");
+				throw new IllegalStateException("Context ["+contextPath+"] already exists in the web application.");
 			}
 
 			SandboxWebappContext web = new SandboxWebappContext(contextPath, webappfolder, classpath,

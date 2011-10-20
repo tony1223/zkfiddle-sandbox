@@ -61,6 +61,10 @@ public class ProjectClassLoader extends WebAppClassLoader {
 		 * class, one at a time.
 		 */
 		if (projectClassPaths != null && projectClassPaths.size() >0 && !"".equals(projectClassPaths.get(0))) {
+
+			if (logger)
+				System.err.println("Start loading classpathpath:");
+			
 			for (String projectClasspath : projectClassPaths) {
 				File f = new File(projectClasspath);
 				if(Configs.isLogMode()){
@@ -75,6 +79,9 @@ public class ProjectClassLoader extends WebAppClassLoader {
 					super.addClassPath(f.getAbsolutePath() + File.separator + entry);
 				}
 			}
+			
+			if (logger)
+				System.err.println("End loading classpathpath:");
 		}
 
 	}

@@ -15,7 +15,7 @@ public class URLUtil {
 	public static void main(String[] args) throws MalformedURLException, ConnectException {
 		
 		System.out.println(URLUtil.fetchContent(new URL(
-				"http://localhost:8088/instance/?path=http://localhost:19502/&ver=5.0.7&name=TonyQ")));
+				"http://localhost:9999/datahandler/sandbox/?path=http%3A%2F%2Fsandbox.local%3A10000%2Ft504%2F&ver=5.0.4&name=Breeze%205.0.4")));
 
 	}
 

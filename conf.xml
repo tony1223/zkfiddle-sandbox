@@ -1,0 +1,80 @@
+<server>
+	<!--
+	<remote>
+		<hostname>http://zkcode.info</hostname>
+		<pingInterval>10000</pingInterval>
+	</remote>
+	<hostname>http://temp.zkfiddle.org</hostname>
+	-->
+
+	<remote>
+		<hostname>http://localhost:9999/datahandler</hostname>
+		<pingInterval>10000</pingInterval>
+	</remote>
+	
+	<local>
+		<hostname>http://sandbox.local</hostname>
+		<debugmsg>false</debugmsg>
+		<!--
+		<autoport>true</autoport>
+		-->
+		<port>10000</port>
+	</local>
+		
+	<sandboxs>
+		<sandbox>
+			<version>5.0.9</version>
+			<name>Breeze 5.0.9</name>
+			<context>/t509</context>
+			<!-- 
+		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.9</libpaths>
+			-->
+			<libpaths>C:/workspace/executor/jar_src/libs;C:/workspace/executor/jar_src/zkcore/5.0.9</libpaths>
+		</sandbox>			
+		<sandbox>
+			<version>5.0.8</version>
+			<name>Breeze 5.0.8</name>
+			<context>/t508</context>
+			<!-- 
+		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.8</libpaths>
+			-->
+			<libpaths>C:/workspace/executor/jar_src/libs;C:/workspace/executor/jar_src/zkcore/5.0.8</libpaths>
+		</sandbox>	
+		<sandbox>
+			<version>5.0.7.1</version>
+			<name>Breeze 5.0.7.1</name>
+			<context>/t5071</context>
+			<!-- 
+		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.7.1/libpaths>
+			-->
+			<libpaths>C:/workspace/executor/jar_src/libs;C:/workspace/executor/jar_src/zkcore/5.0.7.1</libpaths>
+		</sandbox>		
+		<sandbox>
+			<version>5.0.6</version>
+			<name>Breeze 5.0.6</name>
+			<context>/t506</context>
+			<!-- 
+		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.6/libpaths>
+			-->
+			<libpaths>C:/workspace/executor/jar_src/libs;C:/workspace/executor/jar_src/zkcore/5.0.6</libpaths>
+		</sandbox>		
+		<sandbox>
+			<version>5.0.5</version>
+			<name>Breeze 5.0.5</name>
+			<context>/t505</context>
+		    <!-- 
+		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.5/libpaths>
+			-->
+			<libpaths>C:/workspace/executor/jar_src/libs;C:/workspace/executor/jar_src/zkcore/5.0.5</libpaths>
+		</sandbox>
+		<sandbox>
+			<version>5.0.4</version>
+			<name>Breeze 5.0.4</name>
+			<context>/t504</context>
+		    <!-- 
+		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.4/libpaths>
+			-->
+			<libpaths>C:/workspace/executor/jar_src/libs;C:/workspace/executor/jar_src/zkcore/5.0.4</libpaths>
+		</sandbox>		
+	</sandboxs>
+</server>
