@@ -6,8 +6,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.List;
 
 import org.zkoss.fiddler.executor.server.configs.SandboxConfig;
+import org.zkoss.fiddler.executor.server.configs.SandboxInfo;
 import org.zkoss.fiddler.executor.server.configs.SandboxServerConfig;
 import org.zkoss.fiddler.executor.utils.PortUtil;
 import org.zkoss.fiddler.executor.utils.URLUtil;
@@ -29,6 +31,11 @@ public class FiddleSandboxServer {
 	 */
 	public static void main(String[] args) throws Exception {
 
+		if (args.length == 0 || args[0] == null) {
+			System.out.println("Usage:java FiddleSandboxServer <Config file>");
+			return;
+		}
+
 		final SandboxServerConfig conf = SandboxServerConfig.parse(args[0]);
 
 		Integer port = conf.getPort();
@@ -44,9 +51,8 @@ public class FiddleSandboxServer {
 
 		for (SandboxConfig sbConf : conf.getSandboxs()) {
 			// Check if we could redirect to another link first
-			server.addContext(sbConf.getContext(), null, 
-					Arrays.asList(sbConf.getLibpaths().split(";")), 
-					conf.getRemote().getHostname());
+			server.addContext(sbConf.getContext(), null, Arrays.asList(sbConf.getLibpaths().split(";")), conf
+					.getRemote().getHostname());
 		}
 
 		try {
@@ -71,18 +77,14 @@ public class FiddleSandboxServer {
 			public void run() {
 				while (true) {
 					try {
-						for (SandboxConfig sbconf : serverconf.getSandboxs()) {
-							boolean connect = pingRemote(serverconf.getRemote().getHostname(), serverconf.getPath()
-									+ sbconf.getSandboxBasePath(), sbconf.getVersion(), sbconf.getName());
+						boolean connect = pingRemote(serverconf.getRemote().getHostname(), serverconf.getSandboxInfos());
 
-							if (Configs.isLogMode()) {
-								if (connect)
-									System.out.println("connect with [" + serverconf.getRemote().getHostname() + "]");
-								else
-									System.out.println("lost remote connection with ["
-											+ serverconf.getRemote().getHostname() + "]");
-							}
-
+						if (Configs.isLogMode()) {
+							if (connect)
+								System.out.println("connect with [" + serverconf.getRemote().getHostname() + "]");
+							else
+								System.out.println("lost remote connection with ["
+										+ serverconf.getRemote().getHostname() + "]");
 						}
 
 					} catch (ConnectException e) {
@@ -105,7 +107,8 @@ public class FiddleSandboxServer {
 		thread.start();
 	}
 
-	private static boolean pingRemote(String remotehost, String path, String version, String name)
+
+	private static boolean pingRemote(String remotehost, List<SandboxInfo> info)
 			throws MalformedURLException, ConnectException, UnsupportedEncodingException {
 
 		// new spec should be
@@ -114,9 +117,21 @@ public class FiddleSandboxServer {
 		// [[context,ver,name],[context,ver,name],[context,ver,name]]
 		// Don't forget for url encoding and decoding.
 
-		String content = URLUtil.fetchContent(new URL(remotehost + "/sandbox/?path=" + URLEncoder.encode(path,"UTF-8") + "&ver=" + version
-				+ "&name=" + URLEncoder.encode(name,"UTF-8")));
+		String content = URLUtil.fetchContent(new URL(remotehost + "/sandbox/"+getParam(info)));
 		return (Boolean.parseBoolean(content));
+	}
+	
+	private static String getParam(List<SandboxInfo> infos) throws UnsupportedEncodingException{
+		StringBuffer sb = new StringBuffer("?size="+infos.size());
+		for (int i = 0; i < infos.size(); i++) {
+			SandboxInfo info = infos.get(i);
+			
+			sb.append("&path"+i+"=" + URLEncoder.encode(info.getPath(), "UTF-8"));
+			sb.append("&ver"+i+"=" + info.getVersion() );
+			sb.append("&name"+i+"=" + URLEncoder.encode(info.getName(), "UTF-8"));	
+		}
+		
+		return sb.toString();
 	}
 
 }

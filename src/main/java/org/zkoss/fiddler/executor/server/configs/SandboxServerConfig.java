@@ -209,4 +209,19 @@ public class SandboxServerConfig {
 
 		return hostname + portString;
 	}
+	
+	public List<SandboxInfo> getSandboxInfos(){
+		
+		List<SandboxInfo> list = new ArrayList<SandboxInfo>();
+		for (SandboxConfig sbconf : getSandboxs()) {
+			list.add(
+				new SandboxInfo(getPath()+ sbconf.getSandboxBasePath(), 
+						sbconf.getVersion(), 
+						sbconf.getName())
+			
+			);
+		}	
+		
+		return list;
+	}
 }
