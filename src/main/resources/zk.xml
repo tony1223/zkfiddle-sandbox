@@ -11,7 +11,9 @@
             ZK Fiddle Sandboxes
         </value>
     </preference>
-	
+	<client-config>
+		<debug-js>true</debug-js>
+	</client-config>	
 	<!-- -->
     <library-property>
         <name>
