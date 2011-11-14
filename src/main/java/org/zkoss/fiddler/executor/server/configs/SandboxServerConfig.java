@@ -217,7 +217,8 @@ public class SandboxServerConfig {
 			list.add(
 				new SandboxInfo(getPath()+ sbconf.getSandboxBasePath(), 
 						sbconf.getVersion(), 
-						sbconf.getName())
+						sbconf.getName(),
+						sbconf.getTheme())
 			
 			);
 		}	

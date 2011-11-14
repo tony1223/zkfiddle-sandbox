@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.mortbay.jetty.webapp.WebAppContext;
+import org.zkoss.fiddler.executor.classloader.ByteClass;
+import org.zkoss.fiddler.executor.classloader.FiddleClass;
+import org.zkoss.fiddler.executor.classloader.FiddleClassUtil;
 import org.zkoss.fiddler.executor.classloader.ProjectClassLoader;
 import org.zkoss.fiddler.executor.resources.FiddleWebappResource;
 import org.zkoss.fiddler.executor.resources.fetch.FiddleResourceFetcher;
@@ -14,15 +17,19 @@ public class SandboxWebappContext extends WebAppContext{
 	private static final String JETTY_USE_FILE_MAPPED_BUFFER = "org.mortbay.jetty.servlet.Default.useFileMappedBuffer";
 	
 	private List<String> classpath;
-	public SandboxWebappContext(String contextPath,String webappfolder,List<String> classpath,String remoteResourceHost) throws IOException{
-		
+	public SandboxWebappContext(String contextPath,String webappfolder,
+			List<String> classpath,String remoteResourceHost,
+			String theme
+	) throws IOException{
 		this.classpath = classpath;
 		this.setParentLoaderPriority(true);
 		this.setContextPath(contextPath);
 		this.setInitParams(Collections.singletonMap(JETTY_USE_FILE_MAPPED_BUFFER, "true"));
 
-		this.setClassLoader(new ProjectClassLoader(this, classpath));
+		ProjectClassLoader pcl = new ProjectClassLoader(this, classpath);
+		this.setClassLoader(pcl);
 
+		addThemeWebinit(pcl,theme);
 		// ZK web.xml configuration
 		File webapp = null;
 		if (webappfolder == null) {
@@ -43,6 +50,31 @@ public class SandboxWebappContext extends WebAppContext{
 
 	}
 
+	private void addThemeWebinit(ProjectClassLoader loader,String theme){
+		
+		//org.zkoss.fiddle.sandbox.ThemeWebInit
+		
+		StringBuffer themeClassString = new StringBuffer();
+
+		themeClassString.append("package org.zkoss.fiddle.sandbox;\n");
+		themeClassString.append("import org.zkoss.lang.Library;\n");
+		themeClassString.append("import org.zkoss.zk.ui.WebApp;\n");
+		themeClassString.append("import org.zkoss.zk.ui.util.WebAppInit;\n");
+		themeClassString.append("public class ThemeWebInit implements WebAppInit {\n");
+		themeClassString.append(" public void init(WebApp wapp) throws Exception{\n");
+		themeClassString.append(" Library.setProperty(\"org.zkoss.theme.preferred\", \""+theme+"\");");
+		themeClassString.append(" }\n");
+		themeClassString.append(" }\n");
+
+		FiddleClass themeClass= new FiddleClass("ThemeWebInit.java", themeClassString.toString());
+		List<ByteClass> clslist = FiddleClassUtil.compile(themeClass,loader);
+		
+		for(ByteClass bc:clslist){
+			loader.addResourceClass(bc.getCls());
+		}
+
+		
+	}
 	private static File tempResourceFolder() throws IOException {
 		File webapp = File.createTempFile("resource", "tmp");
 		webapp.delete();

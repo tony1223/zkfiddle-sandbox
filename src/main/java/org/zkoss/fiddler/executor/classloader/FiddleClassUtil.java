@@ -55,6 +55,12 @@ public class FiddleClassUtil {
 	// method.invoke(null);
 	// }
 
+	public static List<ByteClass> compile(FiddleClass waitingForCompile,ProjectClassLoader pcl) {
+		ArrayList<FiddleClass> list = new ArrayList<FiddleClass>();
+		list.add(waitingForCompile);
+		return compile(list, null,null, pcl.getClasspathString(), pcl);
+	}
+	
 	public static List<ByteClass> compile(List<FiddleClass> waitingForCompile, Writer pr,
 			DiagnosticCollector diagnostics, ProjectClassLoader pcl) {
 		return compile(waitingForCompile, pr, diagnostics, pcl.getClasspathString(), pcl);

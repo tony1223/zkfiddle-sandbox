@@ -26,15 +26,27 @@
 			<version>5.0.9</version>
 			<name>Breeze 5.0.9</name>
 			<context>/t509</context>
+			<theme>breeze</theme>
 			<!-- 
 		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.9</libpaths>
 			-->
 			<libpaths>C:/workspace/executor/jar_src/libs;C:/workspace/executor/jar_src/zkcore/5.0.9</libpaths>
-		</sandbox>			
+		</sandbox>	
+		<sandbox>
+			<version>5.0.9</version>
+			<name>ClassicBlue 5.0.9</name>
+			<context>/t510</context>
+			<theme>classicblue</theme>
+			<!-- 
+		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.9</libpaths>
+			-->
+			<libpaths>C:/workspace/executor/jar_src/libs;C:/workspace/executor/jar_src/zkcore/5.0.9</libpaths>
+		</sandbox>
 		<sandbox>
 			<version>5.0.8</version>
 			<name>Breeze 5.0.8</name>
 			<context>/t508</context>
+			<theme>breeze</theme>
 			<!-- 
 		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.8</libpaths>
 			-->
@@ -44,6 +56,7 @@
 			<version>5.0.7.1</version>
 			<name>Breeze 5.0.7.1</name>
 			<context>/t5071</context>
+			<theme>breeze</theme>
 			<!-- 
 		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.7.1/libpaths>
 			-->
@@ -53,6 +66,7 @@
 			<version>5.0.6</version>
 			<name>Breeze 5.0.6</name>
 			<context>/t506</context>
+			<theme>breeze</theme>
 			<!-- 
 		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.6/libpaths>
 			-->
@@ -62,6 +76,7 @@
 			<version>5.0.5</version>
 			<name>Breeze 5.0.5</name>
 			<context>/t505</context>
+			<theme>breeze</theme>
 		    <!-- 
 		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.5/libpaths>
 			-->
@@ -71,6 +86,7 @@
 			<version>5.0.4</version>
 			<name>Breeze 5.0.4</name>
 			<context>/t504</context>
+			<theme>breeze</theme>
 		    <!-- 
 		    <libpaths>/var/zkfiddlelib/util;/var/zkfiddlelib/5.0.4/libpaths>
 			-->

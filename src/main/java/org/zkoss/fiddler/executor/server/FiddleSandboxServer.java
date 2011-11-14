@@ -5,7 +5,6 @@ import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.List;
 
 import org.zkoss.fiddler.executor.server.configs.SandboxConfig;
@@ -51,8 +50,7 @@ public class FiddleSandboxServer {
 
 		for (SandboxConfig sbConf : conf.getSandboxs()) {
 			// Check if we could redirect to another link first
-			server.addContext(sbConf.getContext(), null, Arrays.asList(sbConf.getLibpaths().split(";")), conf
-					.getRemote().getHostname());
+			server.addContext(conf,sbConf);
 		}
 
 		try {
@@ -128,7 +126,8 @@ public class FiddleSandboxServer {
 			
 			sb.append("&path"+i+"=" + URLEncoder.encode(info.getPath(), "UTF-8"));
 			sb.append("&ver"+i+"=" + info.getVersion() );
-			sb.append("&name"+i+"=" + URLEncoder.encode(info.getName(), "UTF-8"));	
+			sb.append("&name"+i+"=" + URLEncoder.encode(info.getName(), "UTF-8"));
+			sb.append("&theme"+i+"=" + URLEncoder.encode(info.getTheme(), "UTF-8"));
 		}
 		
 		return sb.toString();

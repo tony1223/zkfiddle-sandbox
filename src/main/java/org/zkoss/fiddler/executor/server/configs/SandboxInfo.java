@@ -7,16 +7,19 @@ public class SandboxInfo {
 	private String version;
 
 	private String name;
+	
+	private String theme;
 
 	public String getPath() {
 		return path;
 	}
 
-	public SandboxInfo(String path, String version, String name) {
+	public SandboxInfo(String path, String version, String name,String theme) {
 		super();
 		this.path = path;
 		this.version = version;
 		this.name = name;
+		this.theme = theme;
 	}
 
 	public void setPath(String path) {
@@ -37,5 +40,15 @@ public class SandboxInfo {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	
+	public String getTheme() {
+		return theme;
+	}
+
+	
+	public void setTheme(String theme) {
+		this.theme = theme;
 	}
 }

@@ -39,7 +39,9 @@
             trendy
         </value>
     </library-property>
-
+	<listener>
+	    <listener-class>org.zkoss.fiddle.sandbox.ThemeWebInit</listener-class>
+	</listener>
 	<session-config>
 		<timeout-uri />
 	</session-config>

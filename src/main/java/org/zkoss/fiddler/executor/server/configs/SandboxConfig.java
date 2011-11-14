@@ -31,6 +31,8 @@ public class SandboxConfig {
 	private String libpaths;
 	
 	private String context ;
+	
+	private String theme;
 
 	public String getVersion() {
 		return version;
@@ -79,7 +81,9 @@ public class SandboxConfig {
 		conf.setVersion(XMLParserUtil.getFirstElementText(sandbox, "version"));
 		conf.setName(XMLParserUtil.getFirstElementText(sandbox, "name"));
 		conf.setContext(XMLParserUtil.getFirstElementText(sandbox, "context"));
+		conf.setContext(XMLParserUtil.getFirstElementText(sandbox, "context"));
 
+		conf.setTheme(XMLParserUtil.getFirstElementText(sandbox, "theme"));
 		conf.setLibpaths(XMLParserUtil.getFirstElementText(sandbox, "libpaths"));
 
 		return conf;
@@ -103,6 +107,16 @@ public class SandboxConfig {
 		}
 		
 		return context;
+	}
+
+	
+	public String getTheme() {
+		return theme;
+	}
+
+	
+	public void setTheme(String theme) {
+		this.theme = theme;
 	}
 
 }
