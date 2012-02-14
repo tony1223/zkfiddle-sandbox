@@ -1,7 +1,7 @@
 <project name="executor" basedir=".">
     
     <target name="run">
-        <java classname="org.zkoss.fiddler.executor.server.FiddleInstanceServer" fork="true">
+        <java classname="org.zkoss.fiddler.executor.server.FiddleInstanceServerAgent" fork="true">
 			<arg value="conf.xml"/>
 
             <classpath>
