@@ -9,6 +9,11 @@ import org.mortbay.resource.Resource;
 
 public class FiddleWEBINFResourceHandler extends FiddleResourceBase {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8602367380283173140L;
+
 	public FiddleWEBINFResourceHandler() {
 		super();
 	}

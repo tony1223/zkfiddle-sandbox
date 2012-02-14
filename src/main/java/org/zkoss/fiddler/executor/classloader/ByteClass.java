@@ -1,17 +1,17 @@
 package org.zkoss.fiddler.executor.classloader;
 public class ByteClass {
 
-		private Class cls;
+		private Class<?> cls;
 
 		private String name;
 
 		private byte[] bytes;
 
-		public Class getCls() {
+		public Class<?> getCls() {
 			return cls;
 		}
 
-		public void setClz(Class cls) {
+		public void setClz(Class<?> cls) {
 			this.cls = cls;
 		}
 

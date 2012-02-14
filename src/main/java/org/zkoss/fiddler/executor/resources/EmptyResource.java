@@ -8,6 +8,11 @@ import org.mortbay.resource.Resource;
 public class EmptyResource extends FiddleResourceBase {
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8427969451928594688L;
+
 	public EmptyResource() {
 		super();
 	}

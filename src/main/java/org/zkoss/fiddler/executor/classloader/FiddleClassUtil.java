@@ -61,6 +61,7 @@ public class FiddleClassUtil {
 		return compile(list, null,null, pcl.getClasspathString(), pcl);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public static List<ByteClass> compile(List<FiddleClass> waitingForCompile, Writer pr,
 			DiagnosticCollector diagnostics, ProjectClassLoader pcl) {
 		return compile(waitingForCompile, pr, diagnostics, pcl.getClasspathString(), pcl);
@@ -74,6 +75,7 @@ public class FiddleClassUtil {
 		return compile(waitingForCompile, null, null, classPath, null);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static List<ByteClass> compile(List<FiddleClass> waitingForCompile, Writer pr,
 			DiagnosticCollector diagnostics, String classPath, ClassLoader test) {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();

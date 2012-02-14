@@ -18,6 +18,7 @@ import org.zkoss.fiddler.executor.server.Configs;
  * 
  * @author jsynge
  */
+@SuppressWarnings("rawtypes")
 public class ProjectClassLoader extends WebAppClassLoader {
 
 	private Map<String, Class> classPool = new HashMap<String, Class>();

@@ -41,6 +41,7 @@ public class FetchResource {
 		this.storePath = storePath;
 	}
 
+	@SuppressWarnings("rawtypes")
 	private Class clz;
 
 	public int getType() {
@@ -67,10 +68,12 @@ public class FetchResource {
 		this.content = content;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Class getClz() {
 		return clz;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void setClz(Class clz) {
 		this.clz = clz;
 	}

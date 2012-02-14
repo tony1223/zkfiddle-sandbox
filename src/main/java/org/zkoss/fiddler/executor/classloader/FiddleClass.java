@@ -11,7 +11,7 @@ public class FiddleClass {
 	private String clsName;
 	private String content;
 
-	private Class cls;
+	private Class<?> cls;
 
 	private byte[] bytes;
 	
@@ -60,12 +60,12 @@ public class FiddleClass {
 		return new ArrayList<FiddleClass>();
 	}
 	
-	public Class getCls() {
+	public Class<?> getCls() {
 		return cls;
 	}
 
 	
-	public void setCls(Class cls) {
+	public void setCls(Class<?> cls) {
 		this.cls = cls;
 	}
 
