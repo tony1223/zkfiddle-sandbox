@@ -138,7 +138,7 @@
 		          <archive>
 		            <manifest>
 		              <addClasspath>true</addClasspath>
-		              <mainClass>org.zkoss.fiddler.executor.server.FiddleSandboxServer</mainClass>
+		              <mainClass>org.zkoss.fiddler.executor.server.FiddleSandboxServerAgent</mainClass>
 		            </manifest>
 		          </archive>
 		        </configuration>

@@ -19,7 +19,7 @@ import org.zkoss.fiddler.executor.utils.URLUtil;
  * 
  * @author tonyq
  */
-public class FiddleSandboxServer {
+public class FiddleSandboxServerAgent {
 
 	private static SandboxServer server;
 
@@ -31,7 +31,7 @@ public class FiddleSandboxServer {
 	public static void main(String[] args) throws Exception {
 
 		if (args.length == 0 || args[0] == null) {
-			System.out.println("Usage:java FiddleSandboxServer <Config file>");
+			System.out.println("Usage:java FiddleSandboxServerAgent <Config file>");
 			return;
 		}
 
