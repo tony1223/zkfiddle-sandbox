@@ -19,7 +19,7 @@ import org.zkoss.fiddler.executor.utils.URLUtil;
 
 public class FiddleResourceFetcher {
 
-	Map<FetchedToken, List<FetchResource>> cacheResult = new HashMap<FetchedToken, List<FetchResource>>();
+	private Map<FetchedToken, List<FetchResource>> cacheResult = new HashMap<FetchedToken, List<FetchResource>>();
 
 	private String host;
 
@@ -52,8 +52,18 @@ public class FiddleResourceFetcher {
 				+ "/")));
 	}
 
+	@SuppressWarnings("rawtypes")
 	private List<FetchResource> parseResourceList(String content, String storeParent) {
-		Map map = (Map) JSON.parse(content);
+		Map map = null ;
+		Object jsonobj = JSON.parse(content);
+		if(Boolean.FALSE.equals(jsonobj)){
+			throw new IllegalStateException("source not found");
+		}
+		try{
+			map = (Map) jsonobj;
+		}catch(Exception ex){
+			throw new IllegalStateException(ex);
+		}
 		Object[] resources = (Object[]) map.get("resources");
 		List<FetchResource> list = new ArrayList<FetchResource>();
 		for (Object obj : resources) {
@@ -70,6 +80,14 @@ public class FiddleResourceFetcher {
 		return list;
 	}
 
+	/**
+	 * 
+	 * @param ft
+	 * @return null if the token is invalid
+	 * @throws MalformedURLException
+	 * @throws ConnectException
+	 * 
+	 */
 	public List<FetchResource> fetch(FetchedToken ft) throws MalformedURLException, ConnectException {
 
 		URL u = new URL(host + "/data/" + ft.getToken() + "/" + ft.getVersion());

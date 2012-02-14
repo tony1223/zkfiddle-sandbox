@@ -30,6 +30,8 @@ import org.zkoss.fiddler.executor.server.SandboxWebappContext;
 
 @SuppressWarnings("restriction")
 public class FiddleWebappResource extends FiddleResourceBase {
+	private static final long serialVersionUID = 3210954444083435699L;
+
 	private static final int TYPE_JAVA = 1;
 	
 	private File baseFile;
@@ -240,6 +242,7 @@ public class FiddleWebappResource extends FiddleResourceBase {
 	 * @param resources
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	public List<Class> compile(List<FetchResource> resources) {
 		List<Class> ret = new ArrayList<Class>();
 		List<FiddleClass> fiddleClass = new ArrayList<FiddleClass>();
