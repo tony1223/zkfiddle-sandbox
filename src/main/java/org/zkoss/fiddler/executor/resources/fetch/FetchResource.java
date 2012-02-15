@@ -12,7 +12,18 @@ import java.net.URL;
 import org.zkoss.fiddler.executor.server.Configs;
 
 public class FetchResource {
+	public static final int TYPE_ZUL = 0;
 
+	public static final int TYPE_JAVA = 1;  
+
+	public static final int TYPE_JS = 2;
+
+	public static final int TYPE_HTML = 3;
+
+	public static final int TYPE_CSS = 4;
+	
+	public static final int TYPE_IMAGE = 5;
+	
 	private int type;
 
 	private String fileName;
@@ -26,7 +37,6 @@ public class FetchResource {
 		try {
 			return f.toURI().toURL();
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			if (Configs.isLogMode())
 				e.printStackTrace();
 			return null;
@@ -91,7 +101,12 @@ public class FetchResource {
 					if(this.getContent() == null){
 						throw new IllegalStateException("file content is null");
 					}
-					out.write(this.getContent());
+					
+					if(type == TYPE_IMAGE){
+						out.write("img:::"+this.getContent());
+					}else{
+						out.write(this.getContent());
+					}
 				} catch (IllegalStateException e){
 					if (Configs.isLogMode())
 						e.printStackTrace();

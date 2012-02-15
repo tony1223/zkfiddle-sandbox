@@ -10,6 +10,7 @@ import javax.servlet.GenericServlet;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.zkoss.fiddler.executor.classloader.ByteClass;
 import org.zkoss.fiddler.executor.classloader.FiddleClass;
@@ -17,6 +18,7 @@ import org.zkoss.fiddler.executor.classloader.FiddleClassUtil;
 import org.zkoss.fiddler.executor.classloader.ProjectClassLoader;
 import org.zkoss.fiddler.executor.resources.FiddleWebappResource;
 import org.zkoss.fiddler.executor.resources.fetch.FiddleResourceFetcher;
+import org.zkoss.fiddler.executor.resources.fetch.ImageFilter;
 
 public class SandboxWebappContext extends WebAppContext {
 	private static final String JETTY_USE_FILE_MAPPED_BUFFER = "org.mortbay.jetty.servlet.Default.useFileMappedBuffer";
@@ -37,6 +39,7 @@ public class SandboxWebappContext extends WebAppContext {
 
 		addThemeWebinit(pcl, theme);
 		this.addServlet(PongServlet.class, "/pong");
+		this.addFilter(ImageFilter.class, "/*",Handler.DEFAULT);
 		// ZK web.xml configuration
 		File webapp = null;
 		if (webappfolder == null) {
